@@ -325,7 +325,7 @@ There are a number of options for estimating $\beta$. Three commonly used techni
 \end{exercise}
 
   
-
+\subsection{Uncertainty quantification}
 
 In a frequentist context, we typically quantify our uncertainty by looking at the sampling distribution of our estimator. Let's assume that our errors are normally distributed, i.e.\ (in vector notation)
 $$y = X\beta+\epsilon,\qquad \epsilon \sim \mbox{Normal}(0,\sigma^2 I)$$.
@@ -339,7 +339,13 @@ $$y = X\beta+\epsilon,\qquad \epsilon \sim \mbox{Normal}(0,\sigma^2 I)$$.
 \end{exercise}
 
 
-Let's now consider the general case where we have a point estimate $\hat{\theta} = (\hat{\theta}_1,\dots, \hat{\theta}_P)^T$ to some set of parameters $\theta = (\theta_1,\dots,\theta_P)^T$, and we have an estimate $\hat{\Sigma}$ to the covariance matrix of the sampling distribution of $\hat{\theta}$. If we want to describe our uncertainty about the individual $\theta_i$, we can look at the diagonal terms in the covariance matrix, $\hat{\Sigma}_{ii} = \hat{\sigma}_i^2$. If we care, more generally, about a \textit{function} of the $\theta_i$, however, the cross terms will become important.
+\begin{exercise}
+  The two exercises above assumed the residual variance $\sigma^2$ is known. This is unlikely to be the case. Propose a strategy for estimating the standard error of $\hat{\beta}_{LS}$ from data, when $\sigma^2$ is unknown. Implement it in R, and test it on the dataset \texttt{Prestige} in the R package \texttt{cars} (there's a starter script, \texttt{prestige.R} on Github). Do you get the same standard errors as the built-in function \texttt{lm}?
+\end{exercise}
+
+
+\subsection{Propogation of uncertainty}
+Let's now consider the general case where we have a point estimate $\hat{\theta} = (\hat{\theta}_1,\dots, \hat{\theta}_P)^T$ to some set of parameters $\theta = (\theta_1,\dots,\theta_P)^T$, and we have an estimate $\hat{\Sigma}$ to the covariance matrix of the sampling distribution of $\hat{\theta}$. If we want to describe our uncertainty about the individual $\theta_i$ (as was the case for calculating standard errors in the regression problems above), we can look at the diagonal terms in the covariance matrix, $\hat{\Sigma}_{ii} = \hat{\sigma}_i^2$. If we care, more generally, about a \textit{function} of the $\theta_i$, however, the cross terms will become important.
 
 \begin{exercise}
   Let's assume we care about $f(\theta) = \sum_i \theta_i$. What is the standard error of $f(\theta)$?
@@ -348,4 +354,6 @@ Let's now consider the general case where we have a point estimate $\hat{\theta}
 \begin{exercise}
   How about the standard error of some arbitrary non-linear function $f(\theta)$? \textit{Hint: Try a Taylor expansion}
 \end{exercise}
+
+
 \end{document}
