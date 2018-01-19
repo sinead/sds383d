@@ -115,7 +115,7 @@ Let's consider the 0/1 form of de Finetti's theorem, for exchangeable sequences 
 \begin{theorem}[de Finetti 0/1]
   An infinite sequence $(X_1,X_2,\dots)$ of binary random variables is exchangeable if and only if its distribution can be written as
   $$\begin{aligned}\Prob(X_1=x_1,X_2=x_2,\dots, X_N=x_N)  =& \int_0^1\prod_{i=1}^N\left\{\theta^{x_i}(1-\theta)^{1-x_i}\right\} d\nu(\theta)\\
-    =&\int_0^1\prod_{i=1}^N\theta^{k}(1-\theta)^{N-k} d\nu(\theta)\end{aligned}$$
+    =&\int_0^1 \theta^{k}(1-\theta)^{N-k} d\nu(\theta)\end{aligned}$$
   where $k=\sum_ix_i$.
 \end{theorem}
 
@@ -123,7 +123,7 @@ We will now work through (most of) a proof in the next two exercises.
 
 \begin{exercise}
   We will start off with a finite sequence $(X_1,\dots, X_M)$. For any $N\leq M$, show that
-  $$\Prob\left(\sum_{i=1}^N X_i = s\Big|\sum_{i=1}^M X_i = t\right) = \frac{{t\choose s}{M-t\choose N-s}}{{m \choose n}}$$
+  $$\Prob\left(\sum_{i=1}^N X_i = s\Big|\sum_{i=1}^M X_i = t\right) = \frac{{t\choose s}{M-t\choose N-s}}{{M \choose N}}$$
 \end{exercise}
 We can therefore write
 \begin{equation}\Prob\left(\sum_{i=1}^N X_i = s\right) = {N\choose s}\sum_{t=s}^{M-N+s}\frac{(t)_s(M-t)_{n-s}}{(M)_N}\Prob\left(\sum_{i=1}^M X_i = t\right),\label{eqn:a}\end{equation}
@@ -131,7 +131,7 @@ where $(x)_y = x(x-1)\dots (x-y+1)$.
 
 Let $F_M(\theta)$ be the distribution function of $\frac{1}{M}(X_1, + \dots, + X_M)$  --  i.e.\ a step function between 0 and 1, with steps of size $\Prob(\sum_i X_i= t)$ at $t=0,1,\dots, M$. Then we can rewrite Equation~\ref{eqn:a} as
 
-$$\Prob\left(\sum_{i=1}^N X_i = s\right) = \int_0^1\frac{(M\theta)_s(M(1-\theta))_{n-s}}{(M)_N}dF_M(\theta)$$
+$$\Prob\left(\sum_{i=1}^N X_i = s\right) = \int_0^1\frac{(M\theta)_s(M(1-\theta))_{N-s}}{(M)_N}dF_M(\theta)$$
 \begin{exercise}
   Show that, as $M\rightarrow \infty$, we can write
   $$\Prob\left(\sum_{i=1}^N X_i = s\right) \rightarrow \int_0^1\theta^s(1-\theta)^{N-s}dF_M(\theta)$$
