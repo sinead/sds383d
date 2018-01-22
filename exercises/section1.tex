@@ -131,10 +131,10 @@ where $(x)_y = x(x-1)\dots (x-y+1)$.
 
 Let $F_M(\theta)$ be the distribution function of $\frac{1}{M}(X_1, + \dots, + X_M)$  --  i.e.\ a step function between 0 and 1, with steps of size $\Prob(\sum_i X_i= t)$ at $t=0,1,\dots, M$. Then we can rewrite Equation~\ref{eqn:a} as
 
-$$\Prob\left(\sum_{i=1}^N X_i = s\right) = \int_0^1\frac{(M\theta)_s(M(1-\theta))_{N-s}}{(M)_N}dF_M(\theta)$$
+$$\Prob\left(\sum_{i=1}^N X_i = s\right) = {N\choose s}\int_0^1\frac{(M\theta)_s(M(1-\theta))_{N-s}}{(M)_N}dF_M(\theta)$$
 \begin{exercise}
   Show that, as $M\rightarrow \infty$, we can write
-  $$\Prob\left(\sum_{i=1}^N X_i = s\right) \rightarrow \int_0^1\theta^s(1-\theta)^{N-s}dF_M(\theta)$$
+  $$\Prob\left(X_1 =x_1,\dots, X_N=x_N \right) \rightarrow \int_0^1\theta^s(1-\theta)^{N-s}dF_M(\theta)$$
 \end{exercise}
 The proof is completed using a result (the Helly Theorem), that shows that any sequence $\{F_M(\theta); M=1,2,\dot\}$ of probability distributions on [0,1] contains a subsequence that converges to $F(\theta)$.
 
