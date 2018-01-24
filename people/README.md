@@ -8,6 +8,8 @@ Here are the links to everyone's github repos for peer review purposes -- please
 
 [Xinjie Fan](https://github.com/wonder1994)
 
+[Morgan T. Kelley](https://github.com/mtkelley)
+
 [Sareh Kouchaki](https://github.com/Sarehkch/Statistical-Modeling-II)
 
 [Yanxin Li](https://github.com/xinerli/SDS383-Statistical-Modeling-II)
