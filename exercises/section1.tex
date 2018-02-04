@@ -348,11 +348,11 @@ $$y = X\beta+\epsilon,\qquad \epsilon \sim \mbox{Normal}(0,\sigma^2 I)$$.
 Let's now consider the general case where we have a point estimate $\hat{\theta} = (\hat{\theta}_1,\dots, \hat{\theta}_P)^T$ to some set of parameters $\theta = (\theta_1,\dots,\theta_P)^T$, and we have an estimate $\hat{\Sigma}$ to the covariance matrix of the sampling distribution of $\hat{\theta}$. If we want to describe our uncertainty about the individual $\theta_i$ (as was the case for calculating standard errors in the regression problems above), we can look at the diagonal terms in the covariance matrix, $\hat{\Sigma}_{ii} = \hat{\sigma}_i^2$. If we care, more generally, about a \textit{function} of the $\theta_i$, however, the cross terms will become important.
 
 \begin{exercise}
-  Let's assume we care about $f(\theta) = \sum_i \theta_i$. What is the standard error of $f(\theta)$?
+  Let's assume we care about $f(\theta) = \sum_i \theta_i$. What is the standard error of $f(\hat{\theta})$?
 \end{exercise}
 
 \begin{exercise}
-  How about the standard error of some arbitrary non-linear function $f(\theta)$? \textit{Hint: Try a Taylor expansion}
+  How about the standard error of some arbitrary non-linear function $f(\hat{\theta})$? \textit{Hint: Try a Taylor expansion}
 \end{exercise}
 
 
