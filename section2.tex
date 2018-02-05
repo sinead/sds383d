@@ -1,0 +1,230 @@
+\documentclass[twoside]{article}
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+
+\usepackage{amsmath,amsfonts,graphicx}
+
+%
+% The following commands set up the lecnum (chap number)
+% counter and make various numbering schemes work relative
+% to the chap number.
+%
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\chap}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf SDS 383D: Modeling II
+	\hfill Spring 2017} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Section #1: #2  \hfill} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Section #1: #2}{Section #1: #2}
+
+   
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+% (To avoid bibliography problems, for now we redefine the \cite command.)
+% Also commands that create a suitable format for the reference list.
+%\renewcommand{\cite}[1]{[#1]}
+%\def\beginrefs{\begin{list}%
+%        {[\arabic{equation}]}{\usecounter{equation}
+%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%         \setlength{\labelwidth}{1.6truecm}}}
+%\def\endrefs{\end{list}}
+%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+\newtheorem{theorem}{Theorem}[lecnum]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{exercise}{Exercise}[lecnum]
+\newtheorem{example}{Example}[lecnum]
+\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand\E{\mathbb{E}}
+\newcommand\Prob{\mathbf{P}}
+\newcommand\Q{\mathbf{Q}}
+\newcommand\cov{\mbox{cov}}
+\begin{document}
+\chap{2}{Bayesian inference in Gaussian models}
+\maketitle
+
+\section{Bayesian inference in a simple Gaussian model}
+
+Let's start with a simple, one-dimensional Gaussian example, where
+
+$$y_i |\mu, \sigma^2 \sim \mbox{N}(\mu,\sigma^2).$$
+
+We will assume that $\mu$ and $\sigma$ are unknown, and will put conjugate priors on them both, so that
+$$\begin{aligned}
+  \sigma^2 \sim& \mbox{Inv-Gamma}(\alpha_0, \beta_0)\\
+  \mu|\sigma^2 \sim& \mbox{Normal}\left(\mu_0, \frac{\sigma^2}{\kappa_0}\right)\end{aligned}$$
+
+or, equivalently,
+$$\begin{aligned}
+  y_i |\mu, \omega \sim& \mbox{N}(\mu,1/\omega)\\
+  \omega \sim& \mbox{Gamma}(\alpha_0, \beta_0)\\
+  \mu|\omega \sim& \mbox{Normal}\left(\mu_0, \frac{1}{\omega\kappa_0}\right)\end{aligned}$$
+
+We refer to this as a normal/inverse gamma prior on $\mu$ and $\sigma^2$ (or a normal/gamma prior on $\mu$ and $\omega$). We will now explore the posterior distributions on $\mu$ and $\omega$(/$\sigma^2$) -- much of this will involve similar results to those obtained in the first set of exercises.
+
+
+
+
+\begin{exercise}
+  Derive the conditional posterior distributions $p(\mu, \omega|y_1,\dots, y_n)$ (or $p(\mu, \sigma^2|y_1,\dots, y_n)$) and show that it is in the same family as $p(\mu, \omega)$. What are the updated parameters $\alpha_n, \beta_n,\mu_n$ and $\kappa_n$?
+\end{exercise}
+
+\begin{exercise}
+  Derive the conditional posterior distribution $p(\mu|\omega,y_1,\dots, y_n)$ and $p(\omega|y_1,\dots, y_n)$ (or if you'd prefer, $p(\mu|\sigma^2, y_1,\dots, y_n)$ and $p(\sigma^2|y_1,\dots, y_n)$). Based on this and the previous exercise, what are reasonable interpretations for the parameters $\mu_0,\kappa_0, \alpha_0$ and $\beta_0$?
+\end{exercise}
+
+\begin{exercise}
+  Show that the marginal distribution over $\mu$ is a centered, scaled $t$-distribution (note we showed something very similar in the last set of exercises!), i.e.\
+  $$p(\mu) \propto \left(1+\frac{1}{\nu}\frac{(\mu-m)^2}{s^2}\right)^{-\frac{\nu+1}{2}}$$
+  What are the location parameter $m$, scale parameter $s$, and degree of freedom $\nu$?
+\end{exercise}
+
+\begin{exercise}
+  The marginal posterior $p(\mu|y_1,\dots, y_n)$ is also a centered, scaled $t$-distribution. Find the updated location, scale and degrees of freedom.
+\end{exercise}
+
+\begin{exercise}
+  Derive the posterior predictive distribution $p(y_{n+1},\dots, y_{n+m}|y_1,\dots, y_{m})$.
+\end{exercise}
+
+\begin{exercise}
+  Derive the marginal distribution over $y_1,\dots, y_n$.
+\end{exercise}
+
+
+
+
+
+\section{Bayesian inference in a multivariate Gaussian model}
+
+Let's now assume that each $y_i$ is a $d$-dimensional vector, such that
+
+$$y_i \sim \mbox{N}(\mu, \Sigma)$$
+for $d$-dimensional mean vector $\mu$ and $d\times d$ covariance matrix $\Sigma$.
+
+We will put an \textit{inverse Wishart} prior on $\Sigma$. The inverse Wishart distribution is a distribution over positive-definite matrices parametrized by $\nu_0>d-1$ degrees of freedom and  positive definite matrix $\Lambda_0^{-1}$, with pdf
+
+$$p(\Sigma|\nu_0, \Lambda_0^{-1}) = \frac{|\Lambda|^{\nu_0/2}}{2^{(\nu_0 +d)/2}\Gamma_d(\nu_0/2)}|\Sigma|^{-\frac{\nu_0+d+1}{2}}e^{-\frac{1}{2}\mbox{tr}(Lambda\Sigma^{-1})}$$
+
+where
+$\Gamma_d(x) = \pi^{d(d-1)/4}\prod_{i=1}^d\Gamma\left(x-\frac{j-1}{2}\right)$.
+\begin{exercise}
+  Show that in the univariate case, the inverse Wishart distribution reduces to the inverse gamma distribution.
+\end{exercise}
+
+\begin{exercise}
+  Let $\Sigma \sim \mbox{Inv-Wishart}(\nu_0, \Lambda_0^{-1})$ and $\mu|\Sigma \sim \mbox{N}(\mu_0, \Sigma/\kappa_0)$, so that
+
+  $$p(\mu,\Sigma) \propto |\Sigma|^{-\frac{\nu_0+d+1}{2}}e^{-\frac{1}{2}\mbox{tr}(\Lambda_0\Sigma^{-1}) + \frac{\kappa_0}{2}(\mu-\mu_0)^T\Sigma^{-1}(\mu-\mu_0)}$$
+
+  and let
+  $$y_i \sim \mbox{N}(\mu, \Sigma)$$
+  Show that $p(\mu, \Sigma|y_1,\dots,y_n)$ is also normal-inverse Wishart distributed, and give the form of the updated parameters $\mu_n, \kappa_n, \nu_n$ and $\Lambda_n$. It will be helpful to note that
+
+  $$\begin{aligned}\sum_{i=1}^n(y_i-\mu)^T\Sigma^{-1}(y_i-\mu) =& \sum_{i=1}^n\sum_{j=1}^d\sum_{k=1}^d(x_{ij}-\mu_j)(\Sigma^{-1})_{jk}(x_{ik}-\mu_k)\\
+    =& \sum_{j=1}^d\sum_{k=1}^d (\Sigma^{-1})_{ab}\sum_{i=1}^n(x_{ij}-\mu_j)(x_{ik}-\mu_k)\\
+    =& tr\left(\Sigma^{-1}\sum_{i=1}^n(x_i-\mu)(x_i-\mu)^T\right)\end{aligned}$$
+  
+  Based on this, give interpretations for the prior parameters.
+\end{exercise}
+\newpage
+\section{A Gaussian linear model}
+Lets now add in covariates, so that
+
+$$\mathbf{y}|\beta, X \sim \mbox{Normal}(X\beta, (\omega \Lambda)^{-1})$$
+
+where $\mathbf{y}$ is a vector of $n$ responses; $X$ is a $n\times d$ matrix of covariates; and $\Lambda$ is a known positive definite matrix.
+Let's assume $\beta\sim \mbox{Normal}(\mu, (\omega K)^{-1})$ and $\omega \sim \mbox{Gamma}(a,b)$, where $K$ is assumed fixed.
+
+
+\begin{exercise}
+  Derive the conditional posterior $p(\beta|y_1,\dots, y_n)$
+\end{exercise}
+
+\begin{exercise}
+  Derive the marginal posterior $p(\omega|y_1,\dots, y_n)$
+\end{exercise}
+
+\begin{exercise}
+  Derive the marginal posterior, $p(\beta|y)$
+\end{exercise}
+
+
+\begin{exercise}
+  Download the dataset dental.csv from Github. This dataset measures a dental distance (specifically, the distance between the center of the pituitary to the pterygomaxillary fissure) in 27 children. Add a column of ones to correspond to the intercept. Fit the above Bayesian model to the dataset, using $\Lambda=I$ and $K=I$, and picking vague priors for the hyperparameters, and plot the resulting fit.
+\end{exercise}
+
+
+
+\section{A hierarchical Gaussian linear model}
+The dental dataset has heavier tailed residuals than we would expect under a Gaussian model. We've seen previously that we can model a scaled $t$-distribution using a scale mixture of Gaussians; let's put that into effect here. Concretely, let
+
+$$\begin{aligned}
+  \mathbf{y}|\beta,\omega,\Lambda \sim& \mbox{N}(X\beta, (\omega \Lambda)^{-1})\\
+  \Lambda =& \mbox{diag}(\lambda_1,\dots, \lambda_n)\\
+  \lambda_i \stackrel{\small{iid}}{\sim} \mbox{Gamma}(\tau,\tau)\\
+  \beta|\omega \sim& \mbox{N}(\mu, (\omega K)^{-1})\\
+  \omega \sim& \mbox{Gamma}(a,b)
+\end{aligned}$$
+
+\begin{exercise}
+  What is the conditional posterior, $p(\lambda_i|\mathbf{y},\beta, \omega)$?
+\end{exercise}
+
+\begin{exercise}
+  Write a Gibbs sampler that alternates between sampling from the conditional posteriors of $\lambda_i$, $\beta$ and $\omega$, and run it for a couple of thousand samplers to fit the model to the dental dataset. 
+\end{exercise}
+
+\begin{exercise}
+  Compare the two fits. Does the new fit capture everything we would like? What assumptions is it making? In particular, look at the fit for just male and just female subjects. Suggest ways in which we could modify the model, and for at least one of the suggestions, write an updated Gibbs sampler and run it on your model.
+\end{exercise}
+  
+  
+
+\end{document}
