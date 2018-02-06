@@ -6,6 +6,8 @@ Here are the links to everyone's github repos for peer review purposes -- please
 
 [Zicheng Cai](https://github.com/caizicheng/SDS383D)
 
+[Arnold Chung](https://github.com/adwc86/SDS383D)
+
 [Alek Dimitriev](https://github.com/alekdimi/classes/tree/master/statsmod2)
 
 [Xinjie Fan](https://github.com/wonder1994)
