@@ -35,3 +35,13 @@ Here are the links to everyone's github repos for peer review purposes -- please
 [Natalia Zuniga Garcia](https://github.com/nzunigag)
 
 
+First peer review pairs:
+
+* Mohamed/Alek
+* Zicheng/Xinjie
+* Arnold/Morgan
+* Sareh/Veta
+* Yanxin/Rimli
+* Jack/Hyunsang
+* Yuxuan/Meng
+* Yuguang/Natalia/Mauricio 
