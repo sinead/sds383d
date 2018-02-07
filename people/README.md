@@ -18,7 +18,7 @@ Here are the links to everyone's github repos for peer review purposes -- please
 
 [Yanxin Li](https://github.com/xinerli/SDS383-Statistical-Modeling-II)
 
-[Jack Liu](https://gitbub.com/ilovez)
+[Jack Liu](https://github.com/ilovez)
 
 [Vera Liu](https://github.com/verazl)
 
