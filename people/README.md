@@ -12,6 +12,8 @@ Here are the links to everyone's github repos for peer review purposes -- please
 
 [Xinjie Fan](https://github.com/wonder1994)
 
+[Mauricio Garcia Tec](https://github.com/mauriciogtec/StatsModellingII)
+
 [Morgan T. Kelley](https://github.com/mtkelley)
 
 [Sareh Kouchaki](https://github.com/Sarehkch/Statistical-Modeling-II)
