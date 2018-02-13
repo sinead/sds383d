@@ -161,7 +161,7 @@ $\Gamma_d(x) = \pi^{d(d-1)/4}\prod_{i=1}^d\Gamma\left(x-\frac{j-1}{2}\right)$.
 \begin{exercise}
   Let $\Sigma \sim \mbox{Inv-Wishart}(\nu_0, \Lambda_0^{-1})$ and $\mu|\Sigma \sim \mbox{N}(\mu_0, \Sigma/\kappa_0)$, so that
 
-  $$p(\mu,\Sigma) \propto |\Sigma|^{-\frac{\nu_0+d+1}{2}}e^{-\frac{1}{2}\mbox{tr}(\Lambda_0\Sigma^{-1}) + \frac{\kappa_0}{2}(\mu-\mu_0)^T\Sigma^{-1}(\mu-\mu_0)}$$
+  $$p(\mu,\Sigma) \propto |\Sigma|^{-\frac{\nu_0+d+2}{2}}e^{-\frac{1}{2}\mbox{tr}(\Lambda_0\Sigma^{-1}) - \frac{\kappa_0}{2}(\mu-\mu_0)^T\Sigma^{-1}(\mu-\mu_0)}$$
 
   and let
   $$y_i \sim \mbox{N}(\mu, \Sigma)$$
