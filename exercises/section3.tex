@@ -109,7 +109,8 @@ $$\begin{aligned}
 
 where $\pi_\theta(\beta)$ is our choice of prior on $\beta$. Unfortunately, there is no choice of prior here that makes the model conjugate.
 
-Let's start off with a normal prior on $\beta$. One appropriate function for $g^{-1}$ is the inverse CDF of the normal distribution -- known as the probit function. This is equivalent to assuming our data are generated according to
+Let's start off with a normal prior on $\beta$. One appropriate function for $g^{-1}$ is the CDF of the normal distribution -- known as the probit function. 
+This is equivalent to assuming our data are generated according to
 
 $$\begin{aligned}
   y_i =& \begin{cases} 1 & if z>0 \\ 0 & \mbox{otherwise}\end{cases}\\
@@ -119,7 +120,7 @@ $$\begin{aligned}
 If we put a normal-inverse gamma prior on $\beta$ and $\tau$, then we have a \textit{latent} regression model on the $(x_i,z_i)$ pairs, that is idential to what we had before! Conditioned on the $z_i$, we can easily sample values for $\beta$ and $\tau$.
 
 \begin{exercise}
-  To complete our Gibbs sampler, we must specify the conditional distribution $p(z_i|x_i,y_i,\beta, \tau)$. Write down the form of this conditional distribution, and write a Gibbs sampler to sample from the posterior distribution. Test it on the dataset \texttt{pima.csv}, which contains diabetes information for women of Pima indian heritage. The dataset is from National Institute of Diabetes and Digestive and Kidney Diseases, full information and explanation of variables is available at \texttt{http://archive.ics.uci.edu/ml/datasets/Pima+Indians+Diabetes}.
+  To complete our Gibbs sampler, we must specify the conditional distribution $p(y_i|x_i,z_i,\beta, \tau)$. Write down the form of this conditional distribution, and write a Gibbs sampler to sample from the posterior distribution. Test it on the dataset \texttt{pima.csv}, which contains diabetes information for women of Pima indian heritage. The dataset is from National Institute of Diabetes and Digestive and Kidney Diseases, full information and explanation of variables is available at \texttt{http://archive.ics.uci.edu/ml/datasets/Pima+Indians+Diabetes}.
 
 \end{exercise}
 
