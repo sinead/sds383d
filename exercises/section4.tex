@@ -1,0 +1,172 @@
+\documentclass[twoside]{article}
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+\usepackage{natbib}
+\usepackage{amsmath,amsfonts,graphicx}
+
+%
+% The following commands set up the lecnum (chap number)
+% counter and make various numbering schemes work relative
+% to the chap number.
+%
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\chap}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf SDS 383D: Modeling II
+	\hfill Spring 2017} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Section #1: #2  \hfill} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Section #1: #2}{Section #1: #2}
+
+   
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+% (To avoid bibliography problems, for now we redefine the \cite command.)
+% Also commands that create a suitable format for the reference list.
+%\renewcommand{\cite}[1]{[#1]}
+%\def\beginrefs{\begin{list}%
+%        {[\arabic{equation}]}{\usecounter{equation}
+%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%         \setlength{\labelwidth}{1.6truecm}}}
+%\def\endrefs{\end{list}}
+%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+\newtheorem{theorem}{Theorem}[lecnum]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{exercise}{Exercise}[lecnum]
+\newtheorem{example}{Example}[lecnum]
+\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand\E{\mathbb{E}}
+\newcommand\Prob{\mathbf{P}}
+\newcommand\Q{\mathbf{Q}}
+\newcommand\cov{\mbox{cov}}
+\begin{document}
+\chap{4}{Gaussian processes}
+\maketitle
+
+\section{Non-linear functions}
+
+\subsection{Regression view}
+
+So far, we've assumed our latent function is a linear function of our data -- which is obviously limiting. One way of circumventing this is to project our inputs into some high-dimensional space using a set of basis functions $\phi:\mathbb{R}^d\rightarrow \mathbb{R}^N$, and then performing linear regression in that space, so that
+
+$$y_i = \phi(x)^T\beta + \epsilon_i$$
+
+For example, we could project $x$ into the space of powers of $x$, i.e. $\phi(x) = (1,x,x^2,x^3\dots)$ to obtain polynomial regression.
+
+
+\begin{exercise}
+  Let $\mathbf{y}$ and $\mathbf{X}$ be set of observations and corresponding covariates, and $y_*$ be the unknown value we wish to predict at covariate $\mathbf{x}_*$.  Assume that
+
+  $$\begin{aligned}
+    \beta \sim& \mbox{N}\left(0,\Sigma\right)\\
+    \begin{bmatrix}f_* \\ \mathbf{f}\end{bmatrix} =& \begin{bmatrix}\boldsymbol{\phi}_*^T\\ \boldsymbol{\Phi}^T\end{bmatrix}^T\beta\\
+      \begin{bmatrix}y_* \\ \mathbf{y}\end{bmatrix} \sim& \mbox{N}\left(\begin{bmatrix}f_* \\ \mathbf{f}\end{bmatrix},\sigma^2\mathbf{I}\right)
+      \end{aligned}$$
+  where $\boldsymbol{\phi}:=\phi(\mathbf{x})$ and $\boldsymbol{\Phi}:=\phi(\mathbf{X})$.
+  
+  What is the predictive distribution $p(f_*|\mathbf{y},\mathbf{x}_*,\mathbf{X})$? Note: this is very similar to questions we did in Section 1.
+ 
+\end{exercise}
+
+
+If (as here) we only ever access $\psi$ via this inner product, we can choose to work instead with $k(\cdot,\cdot)$. This may be very convenient if the dimensionality of $\psi(x)$ is very high (or even infinite... see later). $k(\cdot,\cdot)$ is often refered to as the kernel, and this replacement is referred to as the kernel trick.
+
+\begin{exercise}
+
+  Let's look at a concrete example, using the old faithful dataset on $R$
+  \begin{itemize}
+  \item \texttt{data("faithful",package="datasets")} in R
+  \item or available as \texttt{faithful.csv} on github if you're not using R.
+  \end{itemize}
+
+  Let $\phi(x) = (1,x,x^2,x^3)$. Using appropriate priors on $\beta$ and $\sigma^2$, obtain a posterior distribution over $f:=\phi(x)^T\beta$. Plot the function (with a 95\% credible interval) by evaluating this on a grid of values.
+\end{exercise}
+  
+Note that, in the solution to Exercise 1, we only ever see $\phi$ or $\Phi$ in a form such as $\Phi^T\Sigma\Phi$. We will define $k(\mathbf{x},\mathbf{x}') = \phi(\mathbf{x}^T\Sigma\phi(\mathbf{x}')$. Since $\Sigma$ is positive definite, we can write:
+
+$$k(\mathbf{x},\mathbf{x}') = \psi(\mathbf{x})^T\psi(\mathbf{x})$$
+where $\psi(\mathbf{x}) = \phi(\mathbf{x})\Sigma^{1/2}$
+
+\subsection{Function space view}
+
+Look back at the plot from Exercise 2. We specified a prior distribution over regression parameters, which we can use to obtain a posterior distribution over those regression parameters. But, what we calculated (and plotted) was a posterior distribution over \textit{functions}. Similarly, we can think of our prior on $\beta$ as specifying a prior distribution on the space of cubic functions. Evaluated at a finite number of input locations -- as you did in Exercise 2 -- this posterior distribution is multivariate Gaussian. This is in fact the definition of a Gaussian process: A distribution over functions, such that the marginal distribution evaluated at any finite set of points is multivariate Gaussian.
+
+A priori, the  covariance of $f$ is given by $$\cov(x,x') = E[(f(x)-m(x))(f(x^T)-m(x^T))] = k(x,x')$$. For this reason, our kernel $k$ is often referred to as the covariance function (note, it is a function since we can evaluate it for any pairs $x,x'$). In the above example, where $\beta$ had zero mean, the mean of $f$ is zero; more generally, we will assume some mean function $m(x)$.
+
+Rather than putting a prior distribution over $\beta$, we can specify a covariance function -- remember that our covariance function can be written in terms of the prior covariance of $\beta$.  For example, we might let
+
+$$k(x,x') = \exp\left\{-\frac{1}{2\ell}|x-x'|^2\right\}$$
+ -- this is known as a squared exponential covariance function, for obvious reasons. This prior encodes the following assumptions:
+\begin{itemize}
+\item The covariance between two datapoints decreases monotonically as the distance between them increases.
+\item The covariance function is stationary -- it only depends on the distance between $x$ and $x'$, not their locations.
+\item Even more than being stationary, it is isotropic: It depends only on $|x-x'|$.
+\end{itemize}
+
+\begin{exercise}
+  Let's explore the resulting distribution over functions. Write some code to sample from a Gaussian process prior with squared exponential covariance function, evaluated on a grid of 200 inputs between 0 and 100. For $\ell=1$, sample 5 functions and plot them on the same plot. Repeat for $\ell=0.1$ and $\ell=10$. Why do we call $\ell$ the lengthscale of the kernel?
+\end{exercise}
+
+\begin{exercise}
+  Let $\mathbf{f}_*:=f(\mathbf{X}_*)$ be the function $f$ evaluated at test covariate locations $\mathbf{X}_*$. Derive the posterior distribution $p(\mathbf{f}_*|\mathbf{X}_*,\mathbf{X},\mathbf{y})$, where $\mathbf{y}$ and $\mathbf{X}$ comprise our training set. (You can start from the answer to Exercise 1 if you'd like).
+
+\end{exercise}
+\begin{exercise}
+Return to the faithful dataset. Evaluate the posterior predictive distribution 
+$p(\mathbf{f}_*|\mathbf{X}_*,\mathbf{X},\mathbf{y})$, for some reasonable choices of parameters (perhaps explore a few length scales if you're not sure what to pick), and plot the posterior mean plus a 95\% credible interval on a grid of 200 inputs between 0 and 100, overlaying the actual data.
+\end{exercise}
+  
+
+
+
+
+  \bibliographystyle{apalike}
+  \bibliography{course}
+
+\end{document}
