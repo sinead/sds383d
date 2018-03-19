@@ -141,7 +141,7 @@ A priori, the  covariance of $f$ is given by $$\cov(x,x') = E[(f(x)-m(x))(f(x^T)
 
 Rather than putting a prior distribution over $\beta$, we can specify a covariance function -- remember that our covariance function can be written in terms of the prior covariance of $\beta$.  For example, we might let
 
-$$k(x,x') = \exp\left\{-\frac{1}{2\ell}|x-x'|^2\right\}$$
+$$k(x,x') = \alpha^2\exp\left\{-\frac{1}{2\ell^2}|x-x'|^2\right\}$$
  -- this is known as a squared exponential covariance function, for obvious reasons. This prior encodes the following assumptions:
 \begin{itemize}
 \item The covariance between two datapoints decreases monotonically as the distance between them increases.
@@ -161,8 +161,63 @@ $$k(x,x') = \exp\left\{-\frac{1}{2\ell}|x-x'|^2\right\}$$
 Return to the faithful dataset. Evaluate the posterior predictive distribution 
 $p(\mathbf{f}_*|\mathbf{X}_*,\mathbf{X},\mathbf{y})$, for some reasonable choices of parameters (perhaps explore a few length scales if you're not sure what to pick), and plot the posterior mean plus a 95\% credible interval on a grid of 200 inputs between 0 and 100, overlaying the actual data.
 \end{exercise}
-  
 
+  
+\section{Model selection}
+
+
+As we saw in the previous section, the choice of hyperparameters (for the squared exponential case, the length scale $\ell$) effects the properties of the resulting function. Rather than pick a specific value for the hyperparameter, we can specify the model in a hierarchical manner---just like we did in the linear case.
+
+For example, in the squared exponential setting, we could specify our model as
+
+$$\begin{aligned}
+  \ell^2 \sim& \mbox{Inv-Gamma}(a_\ell, b_\ell)\\
+  \alpha^2 \sim& \mbox{Inv-Gamma}(a_\alpha, b_\alpha)\\
+  \sigma^2 \sim& \mbox{Inv-Gamma}(a_\sigma, b_\sigma)\\
+  k(x,x') =& \alpha^2\exp\left\{-\frac{1}{2\ell^2}|x-x'|^2\right\}+\sigma^2\delta_{x-x'}\\
+  y|X \sim& N(0,\tilde{K})
+\end{aligned}
+$$
+where $K$ is the covariance function evaluated at the input locations $X$. Note that we have integrated out $f$ and placed our prior directly on $y$, incorporating the Gaussian likelihood into the covariance. We can then infer the posterior distribution over $\ell$ using Bayes' Law:
+
+ $$p(\ell|y,X) = \frac{p(y|X,\ell)p(\ell)}{\int_0^\infty p(y|X,\ell)p(\ell)d\ell}$$
+
+ Unfortunately, we typically do not have an analytical form for this posterior, so we must resort to either optimization, or MCMC-based inference.
+
+ \subsection{Optimization}
+ In practice, a common approach is to find the ML estimate for the hyperparameters. Let's assume a generic setting, where the log likelihood is parametrized by some vector of parameters $\theta$. The log likelihood is given by
+
+ $$log p(y|X,\theta) = -\frac{1}{2}y^TK^{-1}y - \frac{1}{2}\log|K|-\frac{n}{2}\log 2 \pi$$
+
+ Taking partial derivatives, we see that
+
+ $$\begin{aligned}\frac{\partial}{d\partial \theta_j} \log p(y|X,\theta) =& \frac{1}{2}y^TK^{-1}\frac{\partial K}{\partial \theta_j} K^{-1}y - \frac{1}{2}\mbox{tr}\left(K^{-1}\frac{\partial K}{\partial \theta_j}\right)\\
+   =& \frac{1}{2}\mbox{tr}\left((\alpha \alpha^T - K^{-1})\frac{\delta K}{\delta \theta_j}\right)\end{aligned}
+ $$
+ where $\alpha = K^{-1}y$. We can use these partial derivatives to find the ML estimate of $\theta$, using a gradient-based optimization method
+
+
+ \begin{exercise}
+   Calculate the appropriate derivatives for the one-dimensional, squared exponential case used for the \texttt{faithful} dataset. Use these gradient to find the optimizing value of $\ell^2$, $\alpha^2$ and $\sigma^2$. Plot the resulting fit.
+ \end{exercise}
+
+
+ \begin{exercise}
+   Repeat the previous exercise, but this time only use the first 10 data points from the faithful dataset. Repeat the optimization several times, using different initializations/random seeds. You will likely see widely different results -- sometimes $\ell$ is big, sometimes $\sigma^2$ is big. Why is this? Discuss why this is a problem here, but wasn't in the previous setting. You may find it helpful to look at the corresponding scatter plot, or plot the log likelihood for certain values of $\sigma^2$ and $\ell$.
+ \end{exercise}
+ 
+ \subsection{MCMC}
+ Optimization is typically pretty quick, which is why it is commonly used in practice. However, we have no guarantee that our optimization surface is convex. An alternative approach is to sample from the posterior distribution over our hyperparameters.
+
+
+ \begin{exercise}
+   Since the posterior is non-conjugate, we can't use a Gibbs sampler. We won't go into the details of appropriate sampling methods since this isn't an MCMC course, but we will explore using black-box samplers. In the R folder, there are three files: \texttt{faithful\_data.R}, \texttt{gp\_regression.stan} and \texttt{run\_gp\_regression.R}. Use these to sample from the model and produce 95\% credible intervals for $\alpha$, $\ell$ and $\sigma$, and 95\% predictive intervals for $t$. Go through the code and make sure you understand what is going on.
+
+ \end{exercise}
+
+
+
+ 
 
 
 
