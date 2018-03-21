@@ -114,6 +114,10 @@ For example, we could project $x$ into the space of powers of $x$, i.e. $\phi(x)
  
 \end{exercise}
 
+Note that, in the solution to Exercise 1, we only ever see $\phi$ or $\Phi$ in a form such as $\Phi^T\Sigma\Phi$. We will define $k(\mathbf{x},\mathbf{x}') = \phi(\mathbf{x}^T\Sigma\phi(\mathbf{x}')$. Since $\Sigma$ is positive definite, we can write:
+
+$$k(\mathbf{x},\mathbf{x}') = \psi(\mathbf{x})^T\psi(\mathbf{x})$$
+where $\psi(\mathbf{x}) = \phi(\mathbf{x})\Sigma^{1/2}$
 
 If (as here) we only ever access $\psi$ via this inner product, we can choose to work instead with $k(\cdot,\cdot)$. This may be very convenient if the dimensionality of $\psi(x)$ is very high (or even infinite... see later). $k(\cdot,\cdot)$ is often refered to as the kernel, and this replacement is referred to as the kernel trick.
 
@@ -128,10 +132,7 @@ If (as here) we only ever access $\psi$ via this inner product, we can choose to
   Let $\phi(x) = (1,x,x^2,x^3)$. Using appropriate priors on $\beta$ and $\sigma^2$, obtain a posterior distribution over $f:=\phi(x)^T\beta$. Plot the function (with a 95\% credible interval) by evaluating this on a grid of values.
 \end{exercise}
   
-Note that, in the solution to Exercise 1, we only ever see $\phi$ or $\Phi$ in a form such as $\Phi^T\Sigma\Phi$. We will define $k(\mathbf{x},\mathbf{x}') = \phi(\mathbf{x}^T\Sigma\phi(\mathbf{x}')$. Since $\Sigma$ is positive definite, we can write:
 
-$$k(\mathbf{x},\mathbf{x}') = \psi(\mathbf{x})^T\psi(\mathbf{x})$$
-where $\psi(\mathbf{x}) = \phi(\mathbf{x})\Sigma^{1/2}$
 
 \subsection{Function space view}
 
