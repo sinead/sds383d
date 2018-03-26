@@ -44,4 +44,15 @@ First peer review pairs:
 * Yanxin/Rimli
 * Jack/Hyunsang
 * Yuxuan/Meng
-* Yuguang/Natalia/Mauricio 
+* Yuguang/Natalia/Mauricio
+
+Second peer review pairs:
+
+* Natalia/Meng
+* Mohamed/Hyunsang
+* Vera/Yuguang
+* Morgan/Yanxin
+* Yuxuan/Sareh
+* Xinjie/Mauricio
+* Alek/Jack
+* Arnold/Rimli/Zicheng
