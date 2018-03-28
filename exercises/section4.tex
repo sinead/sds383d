@@ -114,7 +114,7 @@ For example, we could project $x$ into the space of powers of $x$, i.e. $\phi(x)
  
 \end{exercise}
 
-Note that, in the solution to Exercise 1, we only ever see $\phi$ or $\Phi$ in a form such as $\Phi^T\Sigma\Phi$. We will define $k(\mathbf{x},\mathbf{x}') = \phi(\mathbf{x}^T\Sigma\phi(\mathbf{x}')$. Since $\Sigma$ is positive definite, we can write:
+Note that, in the solution to Exercise 1, we only ever see $\phi$ or $\Phi$ in a form such as $\Phi^T\Sigma\Phi$. We will define $k(\mathbf{x},\mathbf{x}') = \phi(\mathbf{x})^T\Sigma\phi(\mathbf{x}')$. Since $\Sigma$ is positive definite, we can write:
 
 $$k(\mathbf{x},\mathbf{x}') = \psi(\mathbf{x})^T\psi(\mathbf{x})$$
 where $\psi(\mathbf{x}) = \phi(\mathbf{x})\Sigma^{1/2}$
@@ -164,7 +164,7 @@ $p(\mathbf{f}_*|\mathbf{X}_*,\mathbf{X},\mathbf{y})$, for some reasonable choice
 \end{exercise}
 
   
-\section{Model selection}
+\section{Parameter Estimation}
 
 
 As we saw in the previous section, the choice of hyperparameters (for the squared exponential case, the length scale $\ell$) effects the properties of the resulting function. Rather than pick a specific value for the hyperparameter, we can specify the model in a hierarchical manner---just like we did in the linear case.
@@ -217,8 +217,69 @@ where $K$ is the covariance function evaluated at the input locations $X$. Note 
  \end{exercise}
 
 
+ \begin{exercise}
+   Let's now look at a dataset with multiple predictors. Download the dataset weather.csv -- this contains latitude and longitude data for 147 weather stations, plus a response ``temperature'', which is the difference between the forecasted and actual temperature for each station.
+
+   How should we extend our kernel to multiple dimensions? (There is more than one option here). Should we use the same lengthscale for latitude and longitude?  Construct an appropriate parametrized kernel, and learn the parameters either via optimization or using MCMC by editing the Stan code (Note: If you go for the stan code, you will need to implement your new kernel).
+
+   Using an appropriate visualization tool, plot the mean function (try imshow or contourf in matlab or matplotlib (for python), or image or filled.contour for R).
+ \end{exercise}
+
+
+
+   
+
 
  
+ \section{Beyond regression: non-conjugate likelihoods}
+
+ So far, we've focused on Gaussian processes in a regression context. We can however use them as the basis of a non-Gaussian regression... using exactly the same techniques as we used for the regression setting! For example, in Section 3, we dealt with non-Gaussian data by transforming our regression output:
+
+ $$y_i|\beta,x_i \sim f(g^{-1}(x_i^T\beta))$$
+
+ where $f$ is an appropriate likelihood model (e.g.\ Bernoulli for binary data, Poisson for count data) and $g^{-1}$ was a function that maps the real-valued $x_i^T\beta$ to an appropriate space for that likelihood.
+
+
+ We can do exactly the same here, by letting
+
+ $$\begin{aligned}f \sim& \mbox{GP}(0, k)\\
+   y_i \sim&f(g^{-1}(f(x_i)))\end{aligned}
+ $$
+
+
+ Let's start by considering a binary example. In the GLM setting, we looked at both probit and logit regression. We can use the same approaches here!
+
+ \begin{exercise}
+   Describe (including pseudo-code) how we could implement probit Gaussian process regression, using an auxiliary variable method analogous to that used in Exercise 3.1.
+ \end{exercise}
+
+ For the logit case, we can again use a Laplace approximation to approximate our posterior. In the GLM setting, we used the Laplace approximation to approximate the posterior over $\beta$. Here, we will work directly with our function $f$ evaluated at our training locations, and approximate $p(f|X,y,\theta)$, where $\theta$ are the parameters of our covariance function.
+
+ Let $P^*(f)\propto p(f|X,y,\theta)$ be our unnormalized posterior, so that $\log P^*(f) = \log p(y|f) + log p(f|X) = \log p(y|f) -\frac{1}{2}f^TK^{-1}f - \frac{1}{2}\log|K| + \mbox{const}$.
+
+ \begin{exercise}
+   Derive the Hessian of $\log P^*(f)$, when $y_i \sim \mbox{Bernoulli}\left(\frac{1}{1+e^{-f_i}}\right)$
+ \end{exercise}
+
+ \begin{exercise}
+   The dataset iris.csv contains details of 150 flowers from three species. Pick two of them (your choice) as your regression dataset. Find the MAP of $f$, for some reasonable choice of hyperparameters and squared exponential kernel. Visualize the corresponding class probabilities on a series of 2d plots.
+ \end{exercise}
+
+ \begin{exercise}
+   Evaluate the Hessian using the same dataset, and visualize uncertainty in your plots from the previous exercise (e.g.\ by creating a contour plot of the marginal standard deviations).
+   \end{exercise}
+
+
+ \begin{exercise}
+   In a multi-class setting, an appropriate likelihood is the multinomial, which is parametrized by a simplex-valued vector $\pi = (\pi_1,\dots, \pi_K)$. We can map a real-valued vector $y$ to the simplex using the softmax transformation:
+
+   $$\pi_i = \frac{e^{y_i}}{\sum_{j=1}^K e^{y_k}}$$
+
+   To use this transformation, we will have to have one Gaussian process for each class.\footnote{Technically, we could use $K-1$ GPs plus a constant reference value for the third class, but let's use $K$ for now.} Practically, we can think of this as using a single Gaussian process, but with a block-diagonal covariance matrix with K $N\times N$ blocks. Using a Laplace approximation to the posterior distribution, repeat the previous three exercises using all three types of iris.
+   \end{exercise}
+   
+ 
+
 
 
 
