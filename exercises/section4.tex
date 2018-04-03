@@ -275,7 +275,7 @@ where $K$ is the covariance function evaluated at the input locations $X$. Note 
 
    $$\pi_i = \frac{e^{y_i}}{\sum_{j=1}^K e^{y_k}}$$
 
-   To use this transformation, we will have to have one Gaussian process for each class.\footnote{Technically, we could use $K-1$ GPs plus a constant reference value for the third class, but let's use $K$ for now.} Practically, we can think of this as using a single Gaussian process, but with a block-diagonal covariance matrix with K $N\times N$ blocks. Using a Laplace approximation to the posterior distribution, repeat the previous three exercises using all three types of iris.
+   To use this transformation, we will have to have one Gaussian process for each class.\footnote{Technically, we could use $K-1$ GPs plus a constant reference value for the third class, but let's use $K$ for now.} Practically, we can think of this as using a single Gaussian process, but with a block-diagonal covariance matrix with K $N\times N$ blocks. Using a Laplace approximation to the posterior distribution, repeat the previous three exercises using all three types of iris. You might find \citep{WilBar1998} a useful reference.
    \end{exercise}
    
  
