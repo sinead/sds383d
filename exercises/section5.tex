@@ -1,0 +1,171 @@
+\documentclass[twoside]{article}
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+\usepackage{natbib}
+\usepackage{amsmath,amsfonts,graphicx}
+
+%
+% The following commands set up the lecnum (chap number)
+% counter and make various numbering schemes work relative
+% to the chap number.
+%
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\chap}[5]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf SDS 383D: Modeling II
+	\hfill Spring 2017} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Section #1: #2  \hfill} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Section #1: #2}{Section #1: #2}
+
+   
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+% (To avoid bibliography problems, for now we redefine the \cite command.)
+% Also commands that create a suitable format for the reference list.
+%\renewcommand{\cite}[1]{[#1]}
+%\def\beginrefs{\begin{list}%
+%        {[\arabic{equation}]}{\usecounter{equation}
+%         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+%         \setlength{\labelwidth}{1.6truecm}}}
+%\def\endrefs{\end{list}}
+%\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+\newtheorem{theorem}{Theorem}[lecnum]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{exercise}{Exercise}[lecnum]
+\newtheorem{example}{Example}[lecnum]
+\newenvironment{proof}{{\bf Proof:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand\E{\mathbb{E}}
+\newcommand\Prob{\mathbf{P}}
+\newcommand\Q{\mathbf{Q}}
+\newcommand\cov{\mbox{cov}}
+\begin{document}
+\chap{5}{Mixture models}
+\maketitle
+
+\section{Mixture models}
+
+So far, we've assumed that our data are conditionally exchangeable given their covariates. In other words, for every unique set of covariates there exists a set of parameters, conditioned on which, the data with those covariates are i.i.d. We used various distributions over functions to learn a distribution over these parameters, for all covariate settings.
+
+A common setting was when our data was normally distributed, with mean $\beta^Tx_i$ and variance $\sigma^2$. If we did not have the covariate values $x_i$, our data would no longer be normally distributed.
+
+\begin{exercise}
+
+  Download the dataset restaurants.csv. This contains profit information for restaurants, based on seating capacity and whether they are open for dinner. Run a Bayesian regression of Profit vs SeatingCapacity and a dummy for DinnerService (you can reuse code from 2.12) (I'd suggest whitening Profit, it will make later prior specification easier). Do the residuals look normal? (e.g.\ plot histograms, qq plots). Now, let's just look at the raw Profit data: Does it look normal?
+\end{exercise}
+
+Let's assume we're in the situation where we don't know any of these covariate values. For now, let's ignore the continuous-valued covariate (SeatingCapacity), and try to infer the categorical covariate. Let's say we know that half our restaurants are open for dinner. We could assume that each restaurant is associated with a \textit{latent} indicator variable $Z_i$, that assigns them to one of two groups, so that
+
+$$Z_i \sim \mbox{Bernoulli}(\pi)$$
+
+As in the regression setting, conditioned on the latent variable, we will assume that the observed profits are i.i.d.\ normal. Again, as in the basic regression setting, we will assume the variances of the two normals are the same, but the means are different, i.e.
+
+$$X_i|Z_i=z \sim \mbox{Normal}(\mu_{z}, \sigma^2).$$
+
+If we marginalize over these binary indicators, our observations are assumed to be distributed according to a mixture of two Gaussians:
+
+$$X_i \sim 0.5N(\mu_1,\sigma_1^2) + 0.5(\mu_2,\sigma_2^2)$$
+
+We can then look at the posterior distribution over each indicator variable, conditioned on the class probabilities and parameters:
+
+$$\begin{aligned}\Prob(Z_i = z|X_i, \pi, \mu_1,\sigma^2) \propto& P(Z_i=z|\pi)p(X_i|\mu_z,\sigma^2)\\
+  \mbox{so, }\qquad \Prob(Z_i=1|X_i, \pi, \mu_1,\sigma^2) \propto& \pi p(X_i|\mu_1,\sigma^2)\\
+  \Prob(Z_i=0|X_i, \pi, \mu_1,\sigma^2) \propto& P(Z_i=0|\pi)p(X_0|\mu_z,\sigma^2)
+\end{aligned}$$
+
+Conditioned on the $Z_i$, we can update the means of the Gaussians using conjugacy.
+
+Note that we are not guaranteed to find latent clusters that correspond to the covariate we were expecting! If there is a more parsimonious partitioning of the data, then the posterior will tend to favor that partitioning.
+
+\begin{exercise}
+  Let's assume (as is the case if our latent variables correspond to the actual DinnerService covariate) that the class proportions are roughly equal, and fix $\pi=0.5$. Using the conditional distributions $P(Z_i|X_i,\pi,\mu_1,\mu_2,\sigma^2)$ and $p(\mu_k|\{X_i:Z_i=k\}, \theta)$, where $\theta$ are appropriate (shared) prior parameters for $\mu_k$, implement a Gibbs sampler that samples the means and the latent indicator variables. I'd suggest using the parameters of the initial regression to pick your hyperparameters.
+
+  Compare the clustering obtained with the ``true'' clustering due to the DinnerService variable.
+\end{exercise}
+
+
+OK, let's now assume we don't know $\pi$, and that the two classes have different values of $\sigma^2$. Let's put a Beta$(\alpha,\beta)$ prior on $\pi$, since it is conjugate to the Bernoulli distribution. 
+
+\begin{exercise}
+  Let's assume we want to integrate out $\pi$. What is the conditional distribution $P(Z_i|Z_{\neg i}, X_i,\mu_1,\mu_2,\sigma_1,\sigma_2,\alpha,\beta)$, where $Z_{\neg i}$ means all the values of $Z$ except $Z_i$?
+\end{exercise}
+
+\begin{exercise}
+  How about if we want to integrate out all of the continuous variables? What is the conditional distribution $P(Z_i|Z_{\neg i}, X, \theta)$, where $\theta$ is the set of all hyperparameters?
+\end{exercise}
+
+\begin{exercise}
+  Implement a Gibbs sampler for this new model where we learn the cluster proportions. You can either implement one of the variants in the previous two exercises, or the fully uncollapsed model where we sample $Z$, $\pi$, $\mu_1$, $\mu_2$, $\sigma^2_1$ and $\sigma^2_2$.
+\end{exercise}
+
+
+Let's now consider the case where we have more than two classes. Here, we need to replace our Bernoulli distribution with a multinomial parametrized by some probability vector $\pi$, so that:
+
+$$P(Z_i = k) = \pi_k$$
+
+\begin{exercise}
+  Much as the multinomial is the multivariate generalization of the binomial distribution, the Dirichlet($\alpha_1,\dots,\alpha_K$) distribution, which has pdf
+  $$\frac{\Gamma(\sum_k \alpha_k)}{\prod_k \Gamma(\alpha_k)} \prod_{k=1}^K \pi_k^{\alpha_k},$$
+  is the multivariate generalization of the beta distribution. Show that the Dirichlet is conjugate to the multinomial, and derive the posterior predictive distribution
+
+  $$P(Z_{n+1}|Z_{1:n}) = \int_{\mathcal{M}} P(Z_{n+1}|\pi)p(\pi) d\pi$$
+
+  You may find it helpful to note that, if $\pi\sim \mbox{Dirichlet}(\alpha_1,\dots,\alpha_K)$, then $E[\pi] = \frac{(\alpha_1,\dots,\alpha_K)}{\sum_k\alpha_k}$.
+\end{exercise}
+
+ \begin{exercise}
+   Modify your previous Gibbs sampler to allow multiple classes, and two-dimensional data. Generate some data according to a Dirichlet mixture of 5 Gaussians in $\mathbb{R}^2$, and test your code on it.
+
+\end{exercise}
+
+  
+  \bibliographystyle{apalike}
+  \bibliography{course}
+
+\end{document}
