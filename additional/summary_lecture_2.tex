@@ -1,0 +1,228 @@
+\documentclass[flegn, 10pt]{beamer}
+\usepackage{epsfig,dsfont,natbib}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx,pgf}
+\usepackage{framed}
+\usepackage{tikz}
+\definecolor{vocab}{RGB}{217,133,14}
+\definecolor{shadecolor}{rgb}{0.8,0.8,0.8}
+\xdefinecolor{c1}{HTML}{8dd3c7}
+\xdefinecolor{c2}{RGB}{255,255,179}
+\xdefinecolor{c3}{RGB}{190,186,218}
+\xdefinecolor{c4}{RGB}{251,128,114}
+\newcommand{\highlight}[1]{\colorbox{yellow}{$\displaystyle #1$}}
+\usepackage{multicol}
+\mode<presentation>
+
+\usepackage{fancyhdr,lastpage,setspace}
+\pagestyle{fancy} \fancyhf{} 
+\rfoot{\vspace{-0.5cm}
+\scriptsize{\insertframenumber}}
+\renewcommand\headrulewidth{0pt}
+
+\newcommand{\dbl}{\setstretch{1.25}}
+\newcommand{\hlf}{\setstretch{1}}
+
+\newcommand{\bl}{\color{blue}}
+\newcommand{\rd}{\color{red}}
+\newcommand{\bk}{\color{black}}
+\newcommand{\gr}{\color{green}}
+
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\mr}[1]{\mathrm{#1}}
+\newcommand{\bm}[1]{\mathbf{#1}}
+\newcommand{\ds}[1]{\mathds{#1}}
+
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ib}{\end{itemize}}
+\newcommand{\p}{\item}
+\newcommand{\sk}{\vspace{.5cm}}
+\newcommand{\C}{\; | \;}
+
+\newcommand{\sko}{\vspace{.1in}}
+\newcommand{\skoo}{\vspace{.2in}}
+\newcommand{\skooo}{\vspace{.3in}}
+\newcommand{\hko}{\hspace{.1in}}
+\newcommand{\hkoo}{\hspace{.2in}}
+\newcommand{\hkooo}{\hspace{.3in}}
+
+\newcommand{\gvn}{\; | \;}
+\newcommand{\E}{\ds{E}}
+\newcommand{\var}{\mr{var}}
+\newcommand{\Prob}{\mathbf{P}}
+\newcommand{\hiddeninfo}[1]{#1}
+
+\logo{\includegraphics[width=2in]{../images/bbalogo.png}}%\includegraphics[width=0.8in]{Logo.png}}
+
+\begin{document}
+
+
+\title{\bf  {\includegraphics[width=\textwidth]{sdslogo.png}
+}
+  \vspace{.5in}
+  
+\large Summary: Gaussian processes
+ \normalsize 
+ }
+
+\author{\vskip .1cm \small
+  Sinead Williamson \\ The University of Texas Department of Statistics and Data Science}%\\
+%  \vskip .2cm \texttt{sinead.github.io}}%mccombs.utexas.edu/faculty/carlos.carvalho/teaching} }
+\date{}
+\maketitle
+
+\dbl
+
+\frame{
+  \frametitle{Gaussian distribution}
+
+  \begin{itemize}
+  \item Perfectly described by its mean and covariance.
+  \item Marginal distribution is Gaussian: If
+    $$\left[ \begin{array}{c} f\\g \end{array}\right] \sim \mbox{Normal}\left(\left[\begin{array}{c}a\\b\end{array}\right],\left[\begin{array}{cc} A & C\\C^T & B\end{array}\right]\right)$$
+    then $f\sim \mbox{Normal}(a,A)$
+  \item Conditional distribution is Gaussian:
+    $$f|g\sim \mbox{Normal}(a+CB^{-1}(g-b),A-CB^{-1}C^T)$$
+  \item Conjugate to Gaussian: if $f\sim \mbox{Normal}(\mu, K)$ and $y|f\sim \mbox{Normal}(f, \Sigma)$, then
+    $$f|y\sim \mbox{Normal}(m, S)$$
+    where $S = \left(K^{-1}+\Sigma^{-1}\right)^{-1}$ and $m=S^{-1}(K^{-1}\mu +\Sigma^{-1}y)$
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{``Infinite-dimensional'' Gaussian distribution}
+  \begin{itemize}
+  \item We can think as a function (loosely) as an infinite-dimensional vector $f$.
+  \item We can then put a distribution over $f$, to get a distribution over functions.
+  \item We only ever see $f(x)$ at finitely many points $x \in \mathcal{T}$...
+  \item But if our distribution over $f$ is Gaussian, the conditional distribution $p(\{f(x): x\not\in\mathcal{T}\}|f(x): X\in \mathcal{T})$ is also Gaussian.
+
+    \pause
+  \item Concretely, we say $f$ is a Gaussian process if all finite marginals are multivariate Gaussian.
+  \end{itemize}
+}
+
+
+
+\frame{
+  \frametitle{Specifying the mean and covariance: Linear regression}
+  \begin{itemize}
+  \item Everything we've looked at previously falls into this framework!
+  \item Bayesian linear regression: $f(x_i) = \beta^Tx_i$, $\beta \sim \mbox{N}(0,\sigma_\beta^2 I)$...
+  \item So, $f(x_i)$ is normal with covariance $k(i,j) = \sigma_\beta^2 x_i^Tx$
+  \item Linear regression is therefore a GP!
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{Other covariances are more interesting...}
+  \includegraphics[width=.7\textwidth]{sq_exp}
+
+  Squared exponential: $k(x,x') = \alpha^2\exp\left\{-\frac{1}{2\ell^2} (x-x')^2\right\}$
+}
+
+\frame{
+  \frametitle{Other covariances are more interesting...}
+  \includegraphics[width=.7\textwidth]{per_k}
+
+  Periodic: $k(x,x') = \alpha^2\exp\left\{-\frac{2\mbox{sin}^2((x-x'/p))}{\ell^2}\right\}$
+}
+
+
+\frame{
+  \frametitle{Other covariances are more interesting...}
+  \includegraphics[width=.7\textwidth]{sq_per_k}
+
+  Periodic + squared exponential...
+}
+
+
+\frame{
+  \frametitle{Gaussian process regression}
+  Because of the conditional properties of the Gaussian, we know that:
+
+  $$p(f^*|f) = Normal(\tilde{m},\tilde{K})$$
+  where
+  \begin{itemize}
+  \item $\tilde{m} = K(X^*,X)(K(X,X))^{-1}f$
+  \item $\tilde{K} = K(X^*,X^*) - K(X^*,X)(K(X,X))^{-1}K(X,X^*)$
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{Hyperparameter optimization}
+  \begin{itemize}
+  \item Our kernel will be parametrized by some set of parameters.
+  \item Each parameter setting will give us a different log likelihood.
+  \item We can therefore optimize our hyperparameters to get the best log likelihood!
+    \begin{itemize}
+    \item We can easily differentiate our log likelihood to get gradients.
+    \end{itemize}
+  \item Alternatively, we can sample hyperparameters in a fully Bayesian scheme.
+    \begin{itemize}
+    \item We don't have conjugacy, so we can't Gibbs sample...
+    \item We can do other things though... Metropolis Hastings is the easiest.
+    \item Pro: Don't get stuck in local minima, fully explore posterior.
+    \item Minus: Much slower...
+    \end{itemize}
+  \end{itemize}
+}
+\frame{
+  \frametitle{Gaussian process classification}
+  We can do classification with GPs if we transform our function from the reals to the unit interval:
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \includegraphics[width=.8\textwidth]{reg}
+    \end{column}
+    \begin{column}{.5\textwidth}
+      \includegraphics[width=.8\textwidth]{class}
+    \end{column}
+  \end{columns}
+}
+
+\frame{
+  \frametitle{Gaussian process classification}
+  \begin{itemize}
+  \item  Let's assume $\pi_i = \Phi(f_i)$, and $y_i \sim \mbox{Bernoulli}(\pi_i)$
+  \item Equivalently, we can write:
+    \begin{itemize}
+    \item $z_i \sim \mbox{N}(f_i,1)$
+    \item $y_i = \begin{cases} 1 & z_i\geq0\\ 0 & z_i<0\end{cases}$
+    \end{itemize}
+  \item If we marginalize out $z$, this is the same!
+  \item We know $p(z_i|y_i,f)$ is a truncated normal with mean $f$ and variance 1.
+  \item We know $p(f|z_i,x_i)$ is the posterior over a GP, with observations $z_i$.
+  \item So, we can Gibbs sample from the posterior over $f$, by alternating samples from $f$ and $z$.
+  \end{itemize}
+}
+
+\frame{
+  \frametitle{Gaussian process classification: Logistic variant}
+\begin{itemize}
+\item Other choices of squishing function don't have this nice auxiliary variable representation.
+\item For example, assume $\pi_i = \frac{1}{1+\exp(-f_i)}$.
+\item Our posterior is proportional to
+  $$p(f|y,x) \propto N(f;0,K) \prod_{i} \pi_i^{y_i}(1-\pi_i)^{1-y_i}$$
+\item We can approximate this using our Laplace approximation!
+  \pause
+\item $L(f) = \log P^*(f|y,x) = \log p(y|f) - \frac{1}{2}f^TK^{-1}f - \frac{1}{2}\log|K|$
+\item $\nabla L(f) = \nabla \log p(y|f) - K^{-1}f$
+\item $\nabla \nabla L(g) = \nabla \nabla \log p(y|f) - K^{-1}$
+\item Approximate posterior with a multivariate normal with precision $\nabla \nabla L(g)$ and mean given by the MAP.
+
+\end{itemize}
+}
+\frame{
+  \frametitle{Gaussian process classification: Making predictions}
+  \begin{itemize}
+  \item We have a Gaussian approximation to $f$ at locations $x$
+  \item We want predictions at locations $x^*$.
+  \item Let's condition on our MAP approximation for $f$, and predict at our locations of interest.
+  \item $f^*|f$ is normal, with mean $K(X^*,X) (K(X,X))^{-1}\hat{f}$ and variance $K(X^*,X^*) - K(X^*,X)(K(X,X))^{-1}K(X,X^*)$
+    
+  \end{itemize}
+  }
+    
+\end{document}
