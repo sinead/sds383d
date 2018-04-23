@@ -63,8 +63,8 @@
 }
   \vspace{.5in}
   
-\large Summary: Gaussian processes
- \normalsize 
+  \large Some notes on the Dirichlet
+  \normalsize 
  }
 
 \author{\vskip .1cm \small
@@ -76,19 +76,128 @@
 \dbl
 
 \frame{
-  \frametitle{Gaussian distribution}
+  \frametitle{Dirichlet distribution}
+Dirichlet prior over probability vector:
+$$p(\theta) = \frac{\Gamma(\sum_{k=1}^K \alpha_i)}{\Prod_{k=1}^K \Gamma(\alpha_i)}\Prod_{k=1}^K \theta_i^{\alpha_i-1}$$
 
-  \begin{itemize}
-  \item Perfectly described by its mean and covariance.
-  \item Marginal distribution is Gaussian: If
-    $$\left[ \begin{array}{c} f\\g \end{array}\right] \sim \mbox{Normal}\left(\left[\begin{array}{c}a\\b\end{array}\right],\left[\begin{array}{cc} A & C\\C^T & B\end{array}\right]\right)$$
-    then $f\sim \mbox{Normal}(a,A)$
-  \item Conditional distribution is Gaussian:
-    $$f|g\sim \mbox{Normal}(a+CB^{-1}(g-b),A-CB^{-1}C^T)$$
-  \item Conjugate to Gaussian: if $f\sim \mbox{Normal}(\mu, K)$ and $y|f\sim \mbox{Normal}(f, \Sigma)$, then
-    $$f|y\sim \mbox{Normal}(m, S)$$
-    where $S = \left(K^{-1}+\Sigma^{-1}\right)^{-1}$ and $m=S^{-1}(K^{-1}\mu +\Sigma^{-1}y)$
-  \end{itemize}
+Discrete prior on observation category:
+$$p(Z_i = k|\theta) = \theta_i$$
+
+Posterior over $\theta$:
+
+$$\begin{aligned}
+  p(\theta|z_i) \propto& p(z_i|\theta) p(\theta)\\
+  \propto& \theta_{z_i}\prod_{k=1}^K \theta_i^{\alpha_i-1}\\
+  =& \prod_{k=1}^K \theta_i^{\alpha_i + \delta_{z_i=k}-1}\\
+  \mbox{ so } (\theta|z_i)\sim& \mbox{Dirichlet} (\alpha_k+\delta_{z_i=k})_{k=1}^K)\end{aligned}$$
+
+If we have multiple samples $z_i\sim \theta$, then
+
+$$p(\theta|z_1,\dots, z_n) = \mbox{Dirichlet)((\alpha_k+m_k)_{k=1}^K)$$
+  where $m_k = \sum_{i=1}^n \delta_{z_i=k}$
+
+
+}
+
+\frame{
+  \frametitle{Posterior predictive}
+  Let's start with $p(z_{i+1}|z_{1:i})$:
+
+  $$\begin{aligned}p(z_{i+1}=k|z_{1:i}) =& \int_{\mathcal{M}}p(z_{i+1}|\theta)p(\theta|z_{1:i})d\theta\\
+    =& \int_{\mathcal{M}}\theta_k\mbox{Dirichlet}(\theta|(\alpha_k+m_k)_{k=1}^K))d\theta\\
+    =& \frac{\alpha_k+m_k}{\sum_{j=1}^K \alpha_j+m_j}\end{aligned}$$
+}
+
+\frame{
+  \frametitle{Posterior predictive: multiple observations}
+  How about $p(z_{i+1:i+j}|z_{1:i})$?
+
+  $$\begin{aligned}p(z_{i+1:i+j}|z_{1:i}) =& p(z_{i+j}|z_{1:i+j-1})p(z_{i+j-1}|z_{1:i+j-2})\cdots p(z_{i+1}|z_{1:i})\\
+    =& \frac{\alpha_{z_{i+j}}+\sum_{n=1}^{i+j-1}\delta_{z_n=z_{i+j}}}{i+j-1+\sum_k\alpha_k}\frac{\alpha_{z_{i+j-1}}+\sum_{n=1}^{i+j-2}\delta_{z_n=z_{i+j-1}}}{i+j-2+\sum_k\alpha_k}\cdots \frac{\alpha_{z_{i+1}}+\sum_{n=1}^{i}\delta_{z_n=z_{i}}}{i+\sum_k\alpha_k}\\
+    =&\frac{\Gamma(i+\sum_k\alpha_k)}{\Gamma(i+j+\sum_k\alpha_k)}\prod_{k=1}^K \frac{\Gamma(\sum_{n=1}^{i+j}\delta_{z_n=k}+\alpha_k)}{\Gamma(\sum_{n=1}^{i}\delta_{z_n=k}+\alpha_k)}
+  \end{aligned}$$
+
+  (if you look up the Dirichlet-Multinomial distribution, you will find this with some constant combinatorics terms).
+}
+
+\frame{
+  \frametitle{Mixture models}
+
+  General format:
+  $$\begin{aligned}
+    \pi \sim& \mbox{Dirichlet}(\alpha)\\
+    \theta_k \sim& p(\theta),\qquad k=1,\dots,K\\
+    z_i \sim& \pi,\qquad i=1,\dots, n\\
+    x_i \sim& f(\theta_{z_i})\end{aligned}$$
+
+
+  Conditional distributions:
+
+  $$\begin{aligned}
+    p(z_i=k|z_{-i}) \propto& m_k^{-i}+\alpha_k\\
+    p(z_i=k|z_{-i},x_i,\theta_k) \propto& (m_k^{-i}+\alpha_k) f(x_i;\theta_k)\\
+  \end{aligned}$$
+
+  If $f$ and $\theta$ are conjugate, we may be able to integrate out $\theta_k$ and instead use $p(x_i|\{x_j,j\neq i, z_j=k\})$
+}
+
+
+
+\frame{
+  \frametitle{Concrete example: Mixture of multinomials}
+$$\begin{aligned}
+    \pi \sim& \mbox{Dirichlet}(\alpha)\\
+    \eta_k \sim& \mbox{Dirichlet}(\beta),\qquad k=1,\dots,K\\
+    z_i \sim& \pi,\qquad i=1,\dots, n\\
+    x_i \sim& \mbox{Multinomial}(M_i,\eta_{z_i})\end{aligned}$$
+
+  If we don't integrate out $\pi$ and $\eta$:
+
+  $$\begin{aligned}
+    p(z_i = k|\pi, x_i,\eta_k) \propto& \pi_i \prod_{v=1}^V\eta_{k,v}^{\sum_{j=1}^M_i x_{i,j}=v}\\
+    \pi|z_{1:n} \sim& \mbox{Dirichlet}\left( (\alpha_k + \sum_i z_i=k)\right)\\
+    \eta_k|\{x_i:z_i=k\} \sim& \mbox{Dirichlet}\left( (beta_v + \sum_{i:z_i=k}\sum_{j=1}^{M_i} x_{i,j}=v)\right)
+  \end{aligned}
+  $$
+}
+\frame{
+  \frametitle{Concrete example: Mixture of multinomials}
+
+  $$\begin{aligned}
+    p(z_i = k|\pi, x_i,\eta_k) \propto& \pi_i \prod_{v=1}^V\eta_{k,v}^{\sum_{j=1}^M_i x_{i,j}=v}\\
+    \pi|z_{1:n} \sim& \mbox{Dirichlet}\left( (\alpha_k + \sum_i z_i=k)\right)\\
+    \eta_k|\{x_i:z_i=k\} \sim& \mbox{Dirichlet}\left( (beta_v + \sum_{i:z_i=k}\sum_{j=1}^{M_i} x_{i,j}=v)\right)
+  \end{aligned}
+  $$
+  Integrating out $\pi$:
+  $$\begin{aligned}
+    p(z_i = k|z_{-i} x_i,\eta_k) \propto& (m_k^{-i} +\alpha_k)\prod_{v=1}^V\eta_{k,v}^{\sum_{j=1}^M_i x_{i,j}=v}\\
+    \eta_k|\{x_i:z_i=k\} \sim& \mbox{Dirichlet}\left( (beta_v + \sum_{i:z_i=k}\sum_{j=1}^{M_i} x_{i,j}=v)\right)
+  \end{aligned}
+  $$
+  \pause
+  Integrating out both $\pi$ and $\eta_k$:
+  $$
+    p(z_i = k|z_{-i}, x,\eta_k) \propto (m_k^{-i} +\alpha_k)\frac{\Gamma(\sum_v\rho_{k,v}^{-i}+\sum_v\beta_v)}{\Gamma(\sum_v\rho_{k,v}^{-i} + M_i +\sum+v\beta_v) }\prod_{v=1}^V \frac{\Gamma(\rho_{k,v}^{-i} + \sum_{j=1}^{M_i}\delta_{x_{i,j}=v} +\beta_v)}{\Gamma(\rho_{k,v}^{-i}  +\beta_v)}   
+  $$
+}
+
+
+Dirichlet prior over probability vector:
+$$p(\theta) = \frac{\Gamma(\sum_{k=1}^K \alpha_i)}{\Prod_{k=1}^K \Gamma(\alpha_i)}\Prod_{k=1}^K \theta_i^{\alpha_i-1}$$
+
+Discrete prior on observation category:
+$$p(Z_i = k|\theta) = \theta_i$$
+
+Posterior over $\theta$:
+
+$$\begin{aligned}
+  p(\theta|z_i) \propto& p(z_i|\theta) p(\theta)\\
+  \propto& \theta_{z_i}\prod_{k=1}^K \theta_i^{\alpha_i-1}\\
+  =& \prod_{k=1}^K \theta_i^{\alpha_i + \delta_{z_i=k}-1}\\
+  \mbox{ so } (\theta|z_i)\sim& \mbox{Dirichlet} (\alpha_k+\delta_{z_i=k})_{k=1}^K)\end{aligned}$$
+
+
 }
 
 \frame{

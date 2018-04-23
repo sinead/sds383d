@@ -203,7 +203,7 @@ $$P(Z_i = k) = \pi_k$$
    \end{itemize}
  \end{exercise}
 
- \begin{exercise}
+ \begin{exercise}[Optional]
    OK, let's try a different likelihood. Let's consider modeling documents. A common modeling assumption is to treat a document as a ``bag-of-words'' -- assuming that all the information is in the words, and none of it is in the ordering. Under this assumption, an appropriate distribution is a multinomial distribution over words, with a Dirichlet prior. Concretely, let:
 
    $$\begin{aligned}
@@ -219,7 +219,7 @@ $$P(Z_i = k) = \pi_k$$
 
  \end{exercise}
 
- \begin{exercise}
+ \begin{exercise}[Optional]
    Implement the code. Generate a test set by generating data from a mixture of two multinomials, one with probabilities $(1,1,1,1,9,9,9,9)/40$ and the other with probabilities $(9,9,9,9,1,1,1,1)/40$. Test your code on this dataset, and compare a single sample's clustering pattern with the ground truth values.
 
 

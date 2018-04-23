@@ -1,0 +1,232 @@
+\documentclass[flegn, 10pt]{beamer}
+\usepackage{epsfig,dsfont,natbib}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx,pgf}
+\usepackage{framed}
+\usepackage{tikz}
+\definecolor{vocab}{RGB}{217,133,14}
+\definecolor{shadecolor}{rgb}{0.8,0.8,0.8}
+\xdefinecolor{c1}{HTML}{8dd3c7}
+\xdefinecolor{c2}{RGB}{255,255,179}
+\xdefinecolor{c3}{RGB}{190,186,218}
+\xdefinecolor{c4}{RGB}{251,128,114}
+\newcommand{\highlight}[1]{\colorbox{yellow}{$\displaystyle #1$}}
+\usepackage{multicol}
+\mode<presentation>
+
+\usepackage{fancyhdr,lastpage,setspace}
+\pagestyle{fancy} \fancyhf{} 
+\rfoot{\vspace{-0.5cm}
+\scriptsize{\insertframenumber}}
+\renewcommand\headrulewidth{0pt}
+
+\newcommand{\dbl}{\setstretch{1.25}}
+\newcommand{\hlf}{\setstretch{1}}
+
+\newcommand{\bl}{\color{blue}}
+\newcommand{\rd}{\color{red}}
+\newcommand{\bk}{\color{black}}
+\newcommand{\gr}{\color{green}}
+
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\mr}[1]{\mathrm{#1}}
+\newcommand{\bm}[1]{\mathbf{#1}}
+\newcommand{\ds}[1]{\mathds{#1}}
+
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ib}{\end{itemize}}
+\newcommand{\p}{\item}
+\newcommand{\sk}{\vspace{.5cm}}
+\newcommand{\C}{\; | \;}
+
+\newcommand{\sko}{\vspace{.1in}}
+\newcommand{\skoo}{\vspace{.2in}}
+\newcommand{\skooo}{\vspace{.3in}}
+\newcommand{\hko}{\hspace{.1in}}
+\newcommand{\hkoo}{\hspace{.2in}}
+\newcommand{\hkooo}{\hspace{.3in}}
+
+\newcommand{\gvn}{\; | \;}
+\newcommand{\E}{\ds{E}}
+\newcommand{\var}{\mr{var}}
+\newcommand{\Prob}{\mathbf{P}}
+\newcommand{\hiddeninfo}[1]{#1}
+
+\logo{\includegraphics[width=2in]{../sdslogo.png}}%\includegraphics[width=0.8in]{Logo.png}}
+
+\begin{document}
+
+
+\title{\bf  {\includegraphics[width=\textwidth]{../sdslogo.png}
+}
+  \vspace{.5in}
+  
+  \large Some notes on the Dirichlet
+  \normalsize 
+ }
+
+\author{\vskip .1cm \small
+  Sinead Williamson \\ The University of Texas Department of Statistics and Data Science}%\\
+%  \vskip .2cm \texttt{sinead.github.io}}%mccombs.utexas.edu/faculty/carlos.carvalho/teaching} }
+\date{}
+\maketitle
+
+\dbl
+
+\frame{
+  \frametitle{Dirichlet distribution}
+Dirichlet prior over probability vector:
+$$p(\theta) = \frac{\Gamma(\sum_{k=1}^K \alpha_i)}{\prod_{k=1}^K \Gamma(\alpha_i)}\prod_{k=1}^K \theta_i^{\alpha_i-1}$$
+
+Discrete prior on observation category:
+$$p(Z_i = k|\theta) = \theta_i$$
+
+Posterior over $\theta$:
+
+$$\begin{aligned}
+  p(\theta|z_i) \propto& p(z_i|\theta) p(\theta)
+  \propto \theta_{z_i}\prod_{k=1}^K \theta_i^{\alpha_i-1}
+  = \prod_{k=1}^K \theta_i^{\alpha_i + \mathbb{I}(z_i=k)-1}\\
+  \mbox{ so } (\theta|z_i)\sim& \mbox{Dirichlet} \left((\alpha_k+\mathbb{I}(z_i=k))_{k=1}^K\right)\end{aligned}$$
+}
+\frame{
+  \frametitle{Dirichlet distribution}
+
+If we have multiple samples $z_i\sim \theta$, then
+
+$$p(\theta|z_1,\dots, z_n) = \mbox{Dirichlet}((\alpha_k+m_k)_{k=1}^K)$$
+  where $m_k = \sum_{i=1}^n \mathbb{I}(z_i=k)$
+
+
+}
+
+\frame{
+  \frametitle{Posterior predictive}
+  Let's start with $p(z_{i+1}|z_{1:i})$:
+
+  $$\begin{aligned}p(z_{i+1}=k|z_{1:i}) =& \int_{\mathcal{M}}p(z_{i+1}|\theta)p(\theta|z_{1:i})d\theta\\
+    =& \int_{\mathcal{M}}\theta_k\mbox{Dirichlet}(\theta|(\alpha_k+m_k)_{k=1}^K))d\theta\\
+    =& \frac{\alpha_k+m_k}{\sum_{j=1}^K \alpha_j+m_j}\end{aligned}$$
+}
+
+\frame{
+  \frametitle{Posterior predictive: multiple observations}
+  How about $p(z_{i+1:i+j}|z_{1:i})$?
+
+  $$\begin{aligned}p(z_{i+1:i+j}|z_{1:i}) =& p(z_{i+j}|z_{1:i+j-1})p(z_{i+j-1}|z_{1:i+j-2})\cdots p(z_{i+1}|z_{1:i})\\
+    =& \frac{\alpha_{z_{i+j}}+m_{z_{i+j}}^{(1:i+j-1)}}{i+j-1+\sum_k\alpha_k}\times \frac{\alpha_{z_{i+j-1}}+m_{z_{i+j-1}}^{(1:i+j-2)}}{i+j-2+\sum_k\alpha_k}\\ &\times \cdots \times\frac{\alpha_{z_{i+1}}+m_{z_{i+1}}^{(1:i)}}{i+\sum_k\alpha_k}\\
+    =&\frac{\Gamma(i+\sum_k\alpha_k)}{\Gamma(i+j+\sum_k\alpha_k)}\prod_{k=1}^K \frac{\Gamma(m_k^{1:i+j}+\alpha_k)}{\Gamma(m_k^{1:i}+\alpha_k)}
+  \end{aligned}$$
+
+  where $m_k^{1:j} = \sum_{i=1}^j\mathbb{I}(z_i=k)$.  (If you look up the Dirichlet-Multinomial distribution, you will find this with some constant combinatorics terms, and $i=0$).
+}
+
+\frame{
+  \frametitle{Mixture models}
+
+  General format:
+  $$\begin{aligned}
+    \pi \sim& \mbox{Dirichlet}(\alpha)\\
+    \theta_k \sim& p(\theta),\qquad k=1,\dots,K\\
+    z_i \sim& \pi,\qquad i=1,\dots, n\\
+    x_i \sim& f(\theta_{z_i})\end{aligned}$$
+
+
+  Conditional distributions:
+
+  $$\begin{aligned}
+    p(z_i=k|z_{-i}) \propto& m_k^{-i}+\alpha_k\\
+    p(z_i=k|z_{-i},x_i,\theta_k) \propto& (m_k^{-i}+\alpha_k) f(x_i;\theta_k)\\
+  \end{aligned}$$
+  \begin{itemize}
+  \item   We can sample $z_i|z_{-i},x_i,\theta_k$ by calculating each unnormalized probability, normalizing, and using them to parametrize a multinomial.
+  \item   If $f$ and $\theta$ are conjugate, we may be able to integrate out $\theta_k$ and instead use $p(x_i|\{x_j,j\neq i, z_j=k\})$
+    \end{itemize}
+}
+
+
+
+\frame{
+  \frametitle{Concrete example: Mixture of multinomials}
+$$\begin{aligned}
+    \pi \sim& \mbox{Dirichlet}(\alpha)\\
+    \eta_k \sim& \mbox{Dirichlet}(\beta),\qquad k=1,\dots,K\\
+    z_i \sim& \pi,\qquad i=1,\dots, n\\
+    x_i \sim& \mbox{Multinomial}(M_i,\eta_{z_i})\end{aligned}$$
+
+  If we don't integrate out $\pi$ and $\eta$:
+
+  $$\begin{aligned}
+    p(z_i = k|\pi, x_i,\eta_k) \propto& \pi_i \prod_{v=1}^V\eta_{k,v}^{\sum_{j=1}^{M_i} x_{i,j}=v}\\
+    \pi|z_{1:n} \sim& \mbox{Dirichlet}\left( \left(\alpha_k + \sum_i z_i=k\right)_{k=1}^K\right)\\
+    \eta_k|\{x_i:z_i=k\} \sim& \mbox{Dirichlet}\left( \left(\beta_v + \sum_{i:z_i=k}\sum_{j=1}^{M_i} x_{i,j}=v\right)_{v=1}^V\right)
+  \end{aligned}
+  $$
+}
+\frame{
+  \frametitle{Concrete example: Mixture of multinomials}
+
+  $$\begin{aligned}
+    p(z_i = k|\pi, x_i,\eta_k) \propto& \pi_i \prod_{v=1}^V\eta_{k,v}^{\sum_{j=1}^{M_i} x_{i,j}=v}\\
+    \pi|z_{1:n} \sim& \mbox{Dirichlet}\left( \left(\alpha_k + \sum_i z_i=k\right)_{k=1}^K\right)\\
+    \eta_k|\{x_i:z_i=k\} \sim& \mbox{Dirichlet}\left( \left(\beta_v + \sum_{i:z_i=k}\sum_{j=1}^{M_i} x_{i,j}=v\right)_{v=1}^V\right)
+  \end{aligned}
+  $$
+  Integrating out $\pi$:
+  $$\begin{aligned}
+    p(z_i = k|z_{-i} x_i,\eta_k) \propto& (m_k^{-i} +\alpha_k)\prod_{v=1}^V\eta_{k,v}^{\sum_{j=1}^{M_i}\mathbb{I}( x_{i,j}=v)}\\
+    \eta_k|\{x_i:z_i=k\} \sim& \mbox{Dirichlet}\left( \left(\beta_v + \sum_{i:z_i=k}\sum_{j=1}^{M_i} \mathbb{I}(x_{i,j}=v)\right)_{v=1}^V\right)
+  \end{aligned}
+  $$
+}
+\frame{
+  \frametitle{Concrete example: Mixture of multinomials}
+  $$\begin{aligned}
+    p(z_i = k|z_{-i} x_i,\eta_k) \propto& (m_k^{-i} +\alpha_k)\prod_{v=1}^V\eta_{k,v}^{\sum_{j=1}^{M_i}\mathbb{I}( x_{i,j}=v)}\\
+    \eta_k|\{x_i:z_i=k\} \sim& \mbox{Dirichlet}\left( \left(\beta_v + \sum_{i:z_i=k}\sum_{j=1}^{M_i} \mathbb{I}(x_{i,j}=v)\right)_{v=1}^V\right)
+  \end{aligned}
+  $$
+  Integrating out both $\pi$ and $\eta_k$:
+  $$\begin{aligned}
+    &p(z_i = k|z_{-i}, x,\eta_k) \\&\propto (m_k^{-i} +\alpha_k)\frac{\Gamma(\sum_v\rho_{k,v}^{-i}+\sum_v\beta_v)}{\Gamma(\sum_v\rho_{k,v}^{-i} + M_i +\sum_v\beta_v) }\prod_{v=1}^V \frac{\Gamma(\rho_{k,v}^{-i} + \sum_{j=1}^{M_i}\mathbb{I}(x_{i,j}=v) +\beta_v)}{\Gamma(\rho_{k,v}^{-i}  +\beta_v)}   \end{aligned}
+    $$
+
+    where $\rho_{k,v} = \sum_{i: z_i=k}\sum_{j=1}^{M_i}\mathbb{I}(x_{i,j}=v)$ is the number of times we've seen token $v$ in cluster $k$.
+}
+
+\frame{
+  \frametitle{Latent Dirichlet allocation}
+  Let's assume we use the the mixture model above to model documents. In such a model, a document is associated with a single cluster, or topic. It might be more reasonable to associate each document with a mixture over topics, so that
+
+  $$\begin{aligned}
+   \theta_i\sim& \mbox{Dirichlet}_K(\alpha),\qquad i=1,\dots,N\\
+   \eta_k \sim& \mbox{Dirichlet}_V(\beta),\qquad k=1,\dots,K\\
+   z_{i,j} \sim& \mbox{Discrete}(\theta_i),\qquad j=1,\dots, M_i\\
+   w_{i,j} \sim& \mbox{Discrete}(\eta_{z_{i,j}}),\end{aligned}$$
+
+}
+
+\frame{
+  \frametitle{An uncollapsed Gibbs sampler}
+  $$\begin{aligned}
+    p(z_{i,j}=k|\theta_i, \eta_k, w_{i,j}=v)\propto& \theta_{i,k}\eta_{k,v}\\
+    p(\theta_i|\{z_{i,j}\}_{j=1}^{M_i}) \sim & \mbox{Dirichlet}\left(\left(m_{i,k}+\alpha\right)_{k=1}^K\right)\\
+    p(\eta_k|\{w_{i,j}:z_{i,j}=k\}_{j=1}^{M_i}) \sim & \mbox{Dirichlet}\left(\left(\rho_{v,k}+\eta\right)_{k=1}^K\right)\end{aligned}$$
+  where  $m_k$ is the number of times we've seen topic $k$ in document $i$, and $\rho_{k,v}$ is the number of times we've seen word $v$ in topic $k$.
+}
+
+\frame{
+  \frametitle{A collapsed Gibbs sampler}
+  Integrating out $\theta_i$:
+  $$\begin{aligned}p(z_{i,j}=k|z_{i,-j},\eta_k, w_{i,j}=v) \propto &p(z_{i,j}=k|z_{i,-j})p(w_{i,j}=v|\eta_k)\\
+    =& \frac{m_{i,k}^{-j}+\alpha_k}{M_i -1 + \sum_k\alpha_k}\eta_{k,v}\end{aligned}$$
+
+  Integrating out $\eta_k$:
+  $$\begin{aligned}p(z_{i,j}=k|z_{i,-j},\eta_k, w_{i,j}=v) \propto& p(z_{i,j}=k|z_{i,-j})p(w_{i,j}=v|\{w_{i,j}:z_{i,j}=k\})\\
+    =& \frac{m_{i,k}^{-j}+\alpha_k}{M_i -1+\sum_k \alpha_k}\cdot \frac{\rho_{k,v}^{-w_{i,j}}+\beta_v}{\sum_{v'}(\rho_{k,v'}^{-w_{i,j}} + \beta_{v'})}\\
+    \propto&(m_{i,k}^{-j}+\alpha_k)\cdot \frac{\rho_{k,v}^{-w_{i,j}}+\beta_v}{\sum_{v'}(\rho_{k,v'}^{-w_{i,j}} + \beta_{v'})}
+    \end{aligned}$$
+    }
+\end{document}
