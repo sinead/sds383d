@@ -1,0 +1,191 @@
+\documentclass[flegn, 10pt]{beamer}
+\usepackage{epsfig,dsfont,natbib}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx,pgf}
+\usepackage{framed}
+\usepackage{tikz}
+\definecolor{vocab}{RGB}{217,133,14}
+\definecolor{shadecolor}{rgb}{0.8,0.8,0.8}
+\xdefinecolor{c1}{HTML}{8dd3c7}
+\xdefinecolor{c2}{RGB}{255,255,179}
+\xdefinecolor{c3}{RGB}{190,186,218}
+\xdefinecolor{c4}{RGB}{251,128,114}
+\newcommand{\highlight}[1]{\colorbox{yellow}{$\displaystyle #1$}}
+\usepackage{multicol}
+\mode<presentation>
+
+\usepackage{fancyhdr,lastpage,setspace}
+\pagestyle{fancy} \fancyhf{} 
+\rfoot{\vspace{-0.5cm}
+\scriptsize{\insertframenumber}}
+\renewcommand\headrulewidth{0pt}
+
+\newcommand{\dbl}{\setstretch{1.25}}
+\newcommand{\hlf}{\setstretch{1}}
+
+\newcommand{\bl}{\color{blue}}
+\newcommand{\rd}{\color{red}}
+\newcommand{\bk}{\color{black}}
+\newcommand{\gr}{\color{green}}
+
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\mr}[1]{\mathrm{#1}}
+\newcommand{\bm}[1]{\mathbf{#1}}
+\newcommand{\ds}[1]{\mathds{#1}}
+
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ib}{\end{itemize}}
+\newcommand{\p}{\item}
+\newcommand{\sk}{\vspace{.5cm}}
+\newcommand{\C}{\; | \;}
+
+\newcommand{\sko}{\vspace{.1in}}
+\newcommand{\skoo}{\vspace{.2in}}
+\newcommand{\skooo}{\vspace{.3in}}
+\newcommand{\hko}{\hspace{.1in}}
+\newcommand{\hkoo}{\hspace{.2in}}
+\newcommand{\hkooo}{\hspace{.3in}}
+
+\newcommand{\gvn}{\; | \;}
+\newcommand{\E}{\ds{E}}
+\newcommand{\var}{\mr{var}}
+\newcommand{\Prob}{\mathbf{P}}
+\newcommand{\hiddeninfo}[1]{#1}
+
+\logo{\includegraphics[width=2in]{../images/bbalogo.png}}%\includegraphics[width=0.8in]{Logo.png}}
+
+\begin{document}
+
+
+\title{\bf  {\includegraphics[width=\textwidth]{../sdslogo.png}
+}
+  \vspace{.5in}
+  
+\large Putting it all together
+ \normalsize 
+ }
+
+\author{\vskip .1cm \small
+  Sinead Williamson \\ The University of Texas Department of Statistics and Data Science}%\\
+%  \vskip .2cm \texttt{sinead.github.io}}%mccombs.utexas.edu/faculty/carlos.carvalho/teaching} }
+\date{}
+\maketitle
+
+\dbl
+
+\frame{
+  \frametitle{Starting point: Bayesian linear regression}
+  Basic model:
+  $$\begin{aligned}
+    \mathbf{y}|\beta,X \sim& \mbox{Normal}(X\beta, (\omega \Lambda)^{-1})\\
+    \beta \sim& \mbox{Normal}(\mu,(\omega K)^{-1})\\
+    \omega \sim& \mbox{Gamma}(a,b)
+  \end{aligned}$$
+
+  Let's look at what this looks like... [notebook]
+}
+
+\frame{
+  We can modify this in a wide variety of ways! Some of which we've played around with...
+  \begin{itemize}
+  \item Switch out likelihood for a different distribution
+  \item Allow variance to vary between individuals $\rightarrow$ heavy tails
+  \item Allow variance to vary between groups
+  \end{itemize}
+  \pause
+  Some of which we haven't!
+}
+\frame{
+  How could we model data that looks like this?
+  \begin{center}
+    \includegraphics[width=.7\textwidth]{plot1}
+  \end{center}
+}
+
+\frame{
+  How about data that looks like this?
+  \begin{center}
+    \includegraphics[width=.7\textwidth]{plot2}
+  \end{center}
+}
+
+\frame{
+  What could we do if we were missing covariates?
+
+  \bigskip
+  
+\begin{tabular}{c c c c}
+X1   &  X2   &  X3  &   Y\\
+1.45 &  0.22 &  0.73 &  3.88\\
+0.62 &  -    &  1.21 &  1.56\\
+2.21 &  1.67 &  1.08 &  3.42\\
+\end{tabular}
+
+}
+
+\frame{
+  The extreme version of missing (categorical) covariates is a Gaussian mixture model:
+  $$\begin{aligned}
+    \pi \sim& \mbox{Dirichlet}(\alpha)\\
+    Z_i \sim& \pi\\
+    \mu_k \sim& Normal(\mu_0,\sigma_0^2)\\
+    \omega_k \sim& Gamma(a,b)\\
+    X_i \sim& Normal(\mu_{Z_k},1/\omega_{Z_k})
+  \end{aligned}$$
+
+  \begin{center}
+    \includegraphics[width=.7\textwidth]{plot3}
+  \end{center}
+}
+
+\frame{
+   $$
+    \pi \sim \mbox{Dirichlet}(\alpha) \qquad 
+    Z_i \sim \pi$$
+    $$
+    \mu_k \sim Normal(\mu_0,\sigma_0^2)\qquad
+    \omega_k \sim Gamma(a,b)\qquad
+    X_i \sim Normal(\mu_{Z_k},1/\omega_{Z_k})
+  $$
+  \begin{itemize}
+  \item   Conditioned on $Z_i$, we have a linear regression model. We can either sample $\omega$ and $\mu$, or integrate them out.
+
+  \item Conditioned on $\pi$, $\omega$ and $\mu$, we have
+    $$P(Z_i = k|\theta,\mu,\omega) \propto \pi_k N(X_i; \mu_k,1/\omega_k)$$
+    \begin{itemize}
+    \item Can construct a normalized vector $\hat{p}: \hat{p}_k = \frac{\pi_k N(X_i; \mu_k,1/\omega_k)}{\sum_j \pi_j N(X_i; \mu_j,1/\omega_j)}$
+    \item Can then sample from a multinomial with probability $\hat{p}$.
+    \end{itemize}
+  \item Can integrate out $\pi$:
+    $$P(Z_i = k|\theta,\mu,\omega) \propto (\sum_{j\neq i} I(Z_j=k)) N(X_i; \mu_k,1/\omega_k)$$
+  \end{itemize}
+}
+
+\frame{
+  What could we do if our data looked like this?
+ \begin{center}
+    \includegraphics[width=.7\textwidth]{plot5}
+ \end{center}
+}
+
+
+
+\frame{
+  
+ \begin{center}
+    \includegraphics[width=.7\textwidth]{plot6}
+ \end{center}
+}
+
+\frame{
+  If we get a mixture model by putting a prior over latent categorical regressors...
+
+  \bigskip
+  
+  What do we get if we put a prior over latent continuous valued regressors?
+  }
+
+
+\end{document}
