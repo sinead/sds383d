@@ -1,0 +1,46 @@
+\documentclass[12pt]{article}
+\usepackage{natbib,amssymb,amsmath,amsthm,epsfig,color,verbatim}
+\newcommand{\sko}{\vspace{.2in}}
+\setlength{\topmargin}{-.7in}
+\setlength{\oddsidemargin}{0.3in}
+\setlength{\textwidth}{6.15in}
+\setlength{\textheight}{9.2in}
+%\renewcommand{\baselinestretch}{1.2}
+
+\begin{document}
+
+\title{\bf  SDS 383D Final exam}
+%\author{\bf SDS 383D}
+\date{\it Spring 2018} %change for each day.
+\maketitle{}
+For all questions, you do not need to repeat calculations that you have carried out in homework exercises; instead you may refer back to the appropriate exercise. Any derivations that do not refer back to homework exercises must be described in full. 
+\begin{enumerate}
+\item Let
+  $$\begin{aligned}
+  \lambda \sim& \mbox{Gamma}(\alpha,\beta) \\
+  X_i \sim& \mbox{Poisson}(\lambda)
+\end{aligned}$$
+  Derive the form of $P(X_{n+1}|X_{1:n})$
+\item Now, let $X$ be sampled from a mixture of two Poisson distributions, so that
+  $$\begin{aligned}
+  \pi \sim& \mbox{Beta}(\tau,\tau)\\
+  \lambda_k \sim& \mbox{Gamma}(\alpha,\beta),\qquad k \in\{0,1\}\\
+  Z_i|\pi \sim& \mbox{Bernoulli}(\pi)\\
+  X_i|Z_i=k \sim& \mbox{Poisson}(\lambda_k)
+\end{aligned}$$
+  Derive the form of $P(Z_i|Z_{-i},X)$
+\item Let
+  $$\begin{aligned}
+  y \sim& \mbox{Normal}(X\beta, I)\\
+  \beta \sim& \mbox{Normal}(0,(X^TX)^{-1})
+\end{aligned}$$
+  Showing all work (i.e.\ \textit{not} simply referring back to previous exercise questions), what is the posterior distribution over $\beta$ given $y$?
+\item You want to use a Gaussian process
+  $$f\sim \mbox{GP}(0,K)$$
+  to model annual rainfall at various geographic locations. Since you know that rainfall is always positive, a Gaussian likelihood is not appropriate here. Write down an appropriate likelihood model for this problem (there are a number of valid options!), and describe either:
+  \begin{enumerate}
+  \item A Gibbs sampler for posterior inference of the latent function $f$, providing all necessary conditional likelihoods.
+  \item Or, the steps required (i.e. an equation that must be solved to provide the mean, and an analytic form for the covariance) for a Laplace approximation to the posterior of $f$.
+  \end{enumerate}
+\end{enumerate}
+\end{document}

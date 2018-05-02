@@ -187,5 +187,116 @@ X1   &  X2   &  X3  &   Y\\
   What do we get if we put a prior over latent continuous valued regressors?
   }
 
+\frame{
+  Regression:
+  $$y|X,\beta \sim \mbox{Normal}(X\beta^T,\sigma^2)$$
 
+  Multivariate extension:
+
+  $$Y|X,\beta \sim \mbox{Normal}(X\beta^T, \sigma^2 I)$$
+
+  \pause
+
+  Replace observed $X$ with latent variables $F$...
+
+  $$\begin{aligned}
+    F \sim& \mbox{Normal}(0, \sigma_Z^2I)\\
+    \Lambda \sim& \mbox{Normal}(0,\sigma_\Lambda^2)\\
+    Y|F,\Lambda \sim& \mbox{Normal}(F\Lambda^T, \sigma_Y^2)
+  \end{aligned}$$
+
+  What is $p(y_i |\Lambda, \sigma_Y^2)$?
+}
+
+\frame{
+  $$
+  \begin{aligned}
+    p(y_i|\Lambda) =& \int p(y_i|f_i,\Lambda)p(f_i) df_i\\
+    \propto& \int \exp\left\{-\frac{1}{2\sigma_y^2}(y_i - \Lambda f_i)^T(y_i -\Lambda f_i)\right\}\exp\left\{-\frac{1}{2}f_i^Tf_i\right\} df_i\\
+    =& \int\exp \left\{-\frac{1}{2}\left((y_i - \Lambda f_i)^T(y_i -\Lambda f_i)/\sigma_y^2 + f_i^Tf_i\right)\right\}\\
+    =& \int \exp \left\{ -\frac{1}{2}\left( \frac{y_i^Ty_i - f_i^T\Lambda^Ty_i - y_i^T\Lambda f_i + f_i^T\Lambda \Lambda^Tf_i}{\sigma_y^2}   f_i^Tf_i\right)\right\} df_i\\ 
+    =& \int \exp\left\{ -\frac{1}{2}(f_i - m)^T\Sigma^{-1}(f_i-m) + y_i^T(\sigma_y^{2}I +\Lambda\Lambda^T)^{-1}y_i\right\}df_i\\
+    &\left(\mbox{where } \Sigma = (I+\Lambda\Lambda^T/\sigma_y^2)^{-1}, m=\Sigma \Lambda^Ty_i/\sigma_y^2\right)\\
+    \propto& \exp\left\{-\frac{1}{2}y_i^T(\sigma_y^2I + \Lambda \Lambda^T)^{-1}y_i\right\}
+  \end{aligned}$$
+
+So, $y_i|\Lambda, \sigma^2 \sim \mbox{Normal}(0,\sigma_yI + \Lambda \Lambda^T)$
+}
+
+  \frame{
+    For a Gibbs sampler, we need the conditional distributions $p(F|\Lambda, Y)$ and $p(\Lambda|F,Y)$.
+
+    $$\begin{aligned}
+      p(\lambda_d|y,F) \propto& p(y^d|F,\Lambda_d) p(\Lambda_d)\\
+      \propto& \exp\left\{-\frac{1}{2}\left(\frac{(y^d - F\Lambda_d)^T(y^d -F\Lambda_d)}{\sigma_y^2} - \frac{\Lambda_k^T\Lambda_k}{\sigma_\Lambda^2}\right)\right\}\\
+    \end{aligned}$$
+
+    \pause
+    \bigskip
+    
+    Look familiar?? Conditioned on $F$, we have a linear regression model!
+
+    \bigskip
+
+    $$\lambda_d | y^d, F \sim \mbox{Normal}(m,S)$$
+    where
+    $$\begin{aligned}
+      S =& \left(\sigma_\lambda^{-2}I + \sigma_y^{-2}F^TF\right)^{-1}
+      m =& S F^Ty^d
+      \end{aligned}$$
+  }
+
+  \frame{
+    What about $p(f_i|\Lambda,Y)$?
+
+    \pause
+    \bigskip
+    Well, our model is symmetric... conditioned on $\Lambda$, we have what looks like a regression:
+
+    $$\begin{aligned}p(f_i|y_i,\Lambda) \propto& p(y_i|f_i,\Lambda)p(f_i)\\
+      \propto \exp\left\{-\frac{1}{2}\left(\frac{(y_i-\Lambda f_i)^T(y_i - \Lambda f_i)}{\sigma_y^2} + f_i^Tf_i\right)\right\}\end{aligned}$$
+
+      So,
+
+      $$f_i \sim \mbox{Normal}(m, S)$$
+       where
+    $$\begin{aligned}
+      S =& \left(I + \sigma_y^{-2}\Lambda^T\Lambda\right)^{-1}
+      m =& S \Lambda^Ty_i
+       \end{aligned}$$
+
+       \pause
+       Let's take a look at what this looks like! [notebook]
+  }
+
+  \frame{
+    \begin{itemize}
+    \item We saw, in our outputs, evidence of a lack of identifiability.
+    \item The two solutions are equally ``good''.
+    \item If we have an orthogonal transform $H$ such that $HH^T = H^TH = I$, then we can write
+
+      $$Y = \Lambda F + \epsilon  \Lambda HH^TF + \epsilon = \tilde{\Lambda}\Tilde{F} + \epsilon$$
+
+    \item $F$ and $\tilde{F}$ have the same statistical properties:
+      $$\begin{aligned}
+      E[\tilde{F}] =& H^TE[F] = 0\\
+      cov(\tilde{F}) =& H^Tcov(F)H = H^TH=I\end{aligned}$$
+    \end{itemize}
+  }
+
+  \frame{
+    Netflix problem...
+    \begin{tabular}{c | c c c c c }
+      & Iron Man & Avengers & The Notebook & It & Saw \\
+      \hline
+      James & 3 & 2 & 1 & 5 & 5\\
+      Joe & 4 & 5& 4 & 1 & 1\\
+      Anna & 1 & ? & 2 & 5 & 4 \\
+      Beth & 4 & 4 & 3 & 2 & 1
+    \end{tabular}
+
+    \bigskip
+
+    How could we model this?
+    }
 \end{document}
