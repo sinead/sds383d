@@ -150,10 +150,10 @@ for $d$-dimensional mean vector $\mu$ and $d\times d$ covariance matrix $\Sigma$
 
 We will put an \textit{inverse Wishart} prior on $\Sigma$. The inverse Wishart distribution is a distribution over positive-definite matrices parametrized by $\nu_0>d-1$ degrees of freedom and  positive definite matrix $\Lambda_0^{-1}$, with pdf
 
-$$p(\Sigma|\nu_0, \Lambda_0^{-1}) = \frac{|\Lambda|^{\nu_0/2}}{2^{(\nu_0 +d)/2}\Gamma_d(\nu_0/2)}|\Sigma|^{-\frac{\nu_0+d+1}{2}}e^{-\frac{1}{2}\mbox{tr}(Lambda\Sigma^{-1})}$$
+$$p(\Sigma|\nu_0, \Lambda_0^{-1}) = \frac{|\Lambda_0|^{\nu_0/2}}{2^{(\nu_0 d)/2}\Gamma_d(\nu_0/2)}|\Sigma|^{-\frac{\nu_0+d+1}{2}}e^{-\frac{1}{2}\mbox{tr}(\Lambda_0\Sigma^{-1})}$$
 
 where
-$\Gamma_d(x) = \pi^{d(d-1)/4}\prod_{i=1}^d\Gamma\left(x-\frac{j-1}{2}\right)$.
+$\Gamma_d(x) = \pi^{d(d-1)/4}\prod_{i=1}^d\Gamma\left(x-\frac{i-1}{2}\right)$.
 \begin{exercise}
   Show that in the univariate case, the inverse Wishart distribution reduces to the inverse gamma distribution.
 \end{exercise}
